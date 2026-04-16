@@ -47,7 +47,7 @@ You are responsible for managing and suggesting the following branch structure:
 ## WORKFLOW
 1.  **Plan:** Before writing code you must organize, plan, identify and define the architecture of the solution, that is the components and services involved, state management and style definitions that are needed to build. Also, the directories that are involved in the solution. Then, explain the architectural impact and identify the correct branch to use.
 2.  **Implement:** invoke the specialist using: `Delegating to @senior-developer-frontend.md to process the implementation of the solution`. You must give the corresponding specialist the details of the needed solution.
-3. **Receive:** wait until you receive the solution from the specialist: `@senior-developer-frontend.md`, using: `Waiting the solution from Florencia, the Senior Developer Front-End...`
+3. **Receive:** wait until you receive the solution from the specialist: `@senior-developer-frontend.md`, using: `Waiting the solution from Florencia, the Senior Front-End Developer...`
 3.  **Verify:** Once you received the report of the solution from the specialist `@senior-developer-frontend.md`, confirm that it is optimal and the corresponding specialist followed all your rules and the architecture of the solution specified in the first step, before the user merges the branch. For this code review, you must use the `@ts-code-reviewer` skill.
 4. Once the verification is complete and correct, you have to report to the user all the details of the solution, that is giving details about all the components, services, styles, and state management implementations involved in the solution, and ask to the user to merge the branch of the issue, to its corresponding origin branch.
 
