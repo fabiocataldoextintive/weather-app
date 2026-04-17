@@ -10,14 +10,14 @@ export function getWeatherApiKey(): string {
 }
 
 /**
- * Call during bootstrap so missing key fails before any HTTP call.
+ * Call from code that needs the key (e.g. WeatherService before HTTP). Do not run at app bootstrap.
  * Unit tests use `build:test` with a placeholder key.
  */
 export function assertWeatherApiKeyConfigured(): void {
   const key = process.env.WEATHER_API_KEY ?? '';
   if (typeof key !== 'string' || key.trim() === '') {
     throw new Error(
-      'Weather API key missing. Set WEATHER_API_KEY in `.env` and use `npm start` / `npm run build`, or pass `--define process.env.WEATHER_API_KEY=...` to Angular CLI. Do not commit keys. See README.',
+      'Weather API key missing. Set `WEATHER_API_KEY` in the environment and rebuild with `--define process.env.WEATHER_API_KEY=...` (see README). Do not commit keys.',
     );
   }
 }

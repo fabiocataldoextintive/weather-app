@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "dotenv -e .env -- cross-env-shell \"ng serve --define process.env.WEATHER_API_KEY=$WEATHER_API_KEY\"",
-    "build": "dotenv -e .env -- cross-env-shell \"ng build --define process.env.WEATHER_API_KEY=$WEATHER_API_KEY\"",
-    "watch": "dotenv -e .env -- cross-env-shell \"ng build --watch --configuration development --define process.env.WEATHER_API_KEY=$WEATHER_API_KEY\"",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
   "private": true,
@@ -27,8 +27,6 @@
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
-    "cross-env": "^7.0.3",
-    "dotenv-cli": "^7.4.4",
     "vitest": "^4.0.8"
   }
 }

@@ -6,14 +6,21 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 **Base URL** (non-secret) is `http://api.weatherapi.com/v1` in `src/environments/environment*.ts`. HTTP code should build request URLs with **`weatherApiUrl()`** from `src/app/core/weather/weather-api-url.ts` (e.g. `weatherApiUrl('current.json')`, `weatherApiUrl('search.json')`) so every call uses the same configured host.
 
-Code reads **`process.env.WEATHER_API_KEY`**. In the browser bundle that name is **replaced at build time** (esbuild `define` in `angular.json`); it is not a live Node `process` at runtime.
+**`process.env.WEATHER_API_KEY`** is read only in code that needs the key (e.g. `getWeatherApiKey()`, `assertWeatherApiKeyConfigured()` before a WeatherAPI call). In the browser bundle it is **replaced at build time** via esbuild `define` in `angular.json`; it is not a live Node `process` at runtime.
 
-1. Set `WEATHER_API_KEY` in **`.env`** at the project root (see `.env.example`).
-2. Run **`npm start`** or **`npm run build`**. Those scripts use `dotenv-cli` to load `.env` and pass `--define process.env.WEATHER_API_KEY=...` into the Angular CLI.
+Default `npm start` / `npm run build` use an **empty** key unless you pass a define to the CLI. Examples:
 
-Do not commit real keys. `.env` is listed in `.gitignore`.
+```bash
+# PowerShell (example key — use your own)
+ng serve --define process.env.WEATHER_API_KEY="'your-key-here'"
+```
 
-Plain `ng serve` / `ng build` keep the default empty define unless you pass `--define process.env.WEATHER_API_KEY='...'` yourself. If the key is empty, the app throws on startup.
+```bash
+# macOS / Linux
+ng serve --define process.env.WEATHER_API_KEY=\"$WEATHER_API_KEY\"
+```
+
+You can keep a local **`.env`** for your own tooling (see `.env.example`); this project does **not** load it automatically. `.env` stays gitignored — do not commit real keys.
 
 ## Development server
 
@@ -47,7 +54,7 @@ Output is under `dist/`.
 ng test
 ```
 
-The `test` build configuration defines a placeholder `process.env.WEATHER_API_KEY` (no `.env` needed).
+The `test` build configuration defines a placeholder `process.env.WEATHER_API_KEY` (no extra flags needed).
 
 ## Additional Resources
 
