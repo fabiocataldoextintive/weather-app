@@ -11,6 +11,10 @@
 npm-debug.log
 yarn-error.log
 
+# Local env (optional; prefer WEATHER_API_KEY in shell for npm scripts)
+.env
+.env.local
+
 # IDEs and editors
 .idea/
 .project
@@ -28,10 +32,6 @@ yarn-error.log
 !.vscode/extensions.json
 !.vscode/mcp.json
 .history/*
-
-# Local secrets
-.env
-.env.local
 
 # Miscellaneous
 /.angular/cache
