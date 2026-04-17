@@ -1,10 +1,22 @@
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+
 import { App } from './app';
+import type { Root } from './core/weather/models/root.interface';
+import { WeatherService } from './core/weather/weather.service';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [
+        {
+          provide: WeatherService,
+          useValue: {
+            getCurrent: () => of({} as Root),
+          },
+        },
+      ],
     }).compileComponents();
   });
 
