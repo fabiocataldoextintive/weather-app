@@ -14,6 +14,7 @@ yarn-error.log
 # Local env (optional; prefer WEATHER_API_KEY in shell for npm scripts)
 .env
 .env.local
+.env*.local
 
 # IDEs and editors
 .idea/

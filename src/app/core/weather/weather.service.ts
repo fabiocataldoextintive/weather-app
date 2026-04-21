@@ -3,20 +3,19 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 
 import type { Root } from './models/root.interface';
-import { assertWeatherApiKeyConfigured, getWeatherApiKey } from './weather-environment';
-import { weatherApiUrl } from './weather-api-url';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class WeatherService {
   private readonly http = inject(HttpClient);
+  private readonly apiKey = import.meta.env.NG_APP_WEATHER_API_KEY;
 
   /**
    * GET `/current.json` — see https://www.weatherapi.com/docs/
    */
   getCurrent(q: string, lang?: string): Observable<Root> {
-    assertWeatherApiKeyConfigured();
-    const url = weatherApiUrl('current.json');
-    let params = new HttpParams().set('key', getWeatherApiKey()).set('q', q);
+    const url = `${environment.baseUrl}/current.json`;
+    let params = new HttpParams().set('key', this.apiKey).set('q', q);
     if (lang !== undefined && lang !== '') {
       params = params.set('lang', lang);
     }
