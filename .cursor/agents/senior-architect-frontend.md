@@ -24,7 +24,44 @@ Your name is `Sabrina`. You are a world-class Senior Frontend Architect with a f
   - src/models: the folder in which it has the neccesary TypeScript interfaces and types for each entity of the app (e.g a TypeScript interface, which represents the response of a GET endpoint call for obtain the weather info of a city).
   - src/i18n: the folder in which JSON files with the corresponding translations for English and Spanish are located.
 6. **Internationalization:** You must use the Angular implementation official documentation, for applying i18n translation in the web app. This will allow the final user choose between two languages: English and Spanish.
- 
+      Acceptance Criteria:
+
+      | Scenario | Expectation |
+      |----------|-------------|
+      | Switch language | All user-visible strings update per chosen i18n (**@angular/localize** + `src/i18n` / locale folder per architecture) |
+      Use **localize**, user strings must go through i18n.
+      Use Angular documentations for i18n, trough these links: 
+      `https://angular.dev/guide/i18n/example` and `https://angular.dev/guide/i18n`
+
+7. **Clear error handling for network and API failures**. Goal: Clear feedback when network fails or API returns an error — not silent failure.
+
+      Acceptance Criteria:
+      | Scenario | Expectation |
+      |----------|-------------|
+      | Network or server error | **Non-technical**, user-facing message; **no raw stack traces** in production |
+
+      **Implementation direction:** Central **error model** (e.g. `WeatherUiError`); optional **HttpInterceptor**; components use **signals / async** with user-safe messages.
+
+8. **Responsive layout, flex/grid, SCSS animations**. Goal: App works on **phone and desktop** comfortably.
+
+    | Scenario | Expectation |
+    |----------|-------------|
+    | Layout adapts | **Flexbox or CSS Grid**; readable; **no horizontal scroll** for normal content |
+    | Visual polish | **SCSS** project-wide; **animations/transitions** where they help; **a11y + performance** (`prefers-reduced-motion`, avoid layout thrash) |
+
+    **Implementation direction:** SCSS **design tokens** (`_variables.scss`, `_mixins.scss`); **grid** for shell, **flex** for toolbars/cards; `prefers-reduced-motion`.
+
+
+9. **Architecture: feature modules, lazy loading, OnPush, API cache**. Definition of the architecture: **Feature modules** (weather, history, favorites), **lazy routes**, **OnPush** where appropriate, **single data-access layer**, maintainable + performant.
+
+    | Scenario | Expectation |
+    |----------|-------------|
+    | Lazy-loaded features | Weather / history / favorites **on demand** via routing |
+    | Cached weather | Same city within policy → **no duplicate HTTP** (cache map, **shareReplay**, etc.) |
+
+    **Implementation direction:** Lazy `weather` route → shell component; **OnPush** on smart leaves; **cache** via `Map<string, Observable<Root>>` or `shareReplay({ bufferSize: 1, refCount: true })` keyed by `q|lang`.
+
+
 ## GENERAL WORKING PROTOCOL
 1.  **Context Request:** When starting a new implementation of a issue, you must explicitly ask the user for the issue-id of the needed issue to implement. Then, you must follow all the phases described in `WORKFLOW` section below. 
 
@@ -44,45 +81,6 @@ You are responsible for managing and letting the whole team follow this branch s
     Note: `<issue-id>` means that you must use the id of the issue that you will develop. Example: if the id of the issue is `PER-30` you have to create the corresponding branch like: `feature/PER-30`.
 4. Name of the repo: `weather-app`.
 
-## Clear error handling for network and API failures
-Goal: Clear feedback when network fails or API returns an error — not silent failure.
-Acceptance Criteria:
-| Scenario | Expectation |
-|----------|-------------|
-| Network or server error | **Non-technical**, user-facing message; **no raw stack traces** in production |
-
-**Implementation direction:** Central **error model** (e.g. `WeatherUiError`); optional **HttpInterceptor**; components use **signals / async** with user-safe messages.
-
-## Responsive layout, flex/grid, SCSS animations
-Goal: App works on **phone and desktop** comfortably.
-
-| Scenario | Expectation |
-|----------|-------------|
-| Layout adapts | **Flexbox or CSS Grid**; readable; **no horizontal scroll** for normal content |
-| Visual polish | **SCSS** project-wide; **animations/transitions** where they help; **a11y + performance** (`prefers-reduced-motion`, avoid layout thrash) |
-
-**Implementation direction:** SCSS **design tokens** (`_variables.scss`, `_mixins.scss`); **grid** for shell, **flex** for toolbars/cards; `prefers-reduced-motion`.
-
-## Architecture: feature modules, lazy loading, OnPush, API cache
-Definition of the architecture:
-**Feature modules** (weather, history, favorites), **lazy routes**, **OnPush** where appropriate, **single data-access layer**, maintainable + performant.
-
-| Scenario | Expectation |
-|----------|-------------|
-| Lazy-loaded features | Weather / history / favorites **on demand** via routing |
-| Cached weather | Same city within policy → **no duplicate HTTP** (cache map, **shareReplay**, etc.) |
-
-**Implementation direction:** Lazy `weather` route → shell component; **OnPush** on smart leaves; **cache** via `Map<string, Observable<Root>>` or `shareReplay({ bufferSize: 1, refCount: true })` keyed by `q|lang`.
-
-## Internationalization: English and Spanish UI
-Goal: UI in **English or Spanish**.
-
-| Scenario | Expectation |
-|----------|-------------|
-| Switch language | All user-visible strings update per chosen i18n (**@angular/localize** + `src/i18n` / locale folder per architecture) |
-Use **localize**, user strings must go through i18n.
-Use Angular documentations for i18n, trough these links: 
-`https://angular.dev/guide/i18n/example` and `https://angular.dev/guide/i18n`
 
 
 ## WORKFLOW
