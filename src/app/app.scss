@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  box-sizing: border-box;
+}
+
+.shell {
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 50%);
+}
