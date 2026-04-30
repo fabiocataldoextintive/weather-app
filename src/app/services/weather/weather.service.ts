@@ -2,8 +2,8 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 
-import type { Root } from './models/root.interface';
-import type { SearchLocation } from './models/search-location.interface';
+import { Root } from '../../models/root.interface';
+import { SearchLocation } from '../../models/search-location.interface';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })

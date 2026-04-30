@@ -1,7 +1,8 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Root } from '../../models/root.interface';
 
-import type { Root } from '../core/weather/models/root.interface';
+
 
 @Component({
   selector: 'app-current-weather-card',

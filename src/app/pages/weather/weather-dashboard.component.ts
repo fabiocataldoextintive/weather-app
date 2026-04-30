@@ -7,10 +7,10 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import type { Root } from '../core/weather/models/root.interface';
-import type { SearchLocation } from '../core/weather/models/search-location.interface';
-import { WeatherService } from '../core/weather/weather.service';
+import { WeatherService } from '../../services/weather/weather.service';
 import { CurrentWeatherCardComponent } from './current-weather-card.component';
+import { SearchLocation } from '../../models/search-location.interface';
+import { Root } from '../../models/root.interface';
 
 const MAX_RECENT = 10;
 const MIN_QUERY_LEN = 2;
@@ -40,7 +40,7 @@ export class WeatherDashboardComponent {
   protected readonly weatherError = signal<string | null>(null);
 
   /** Rows successful enough to compare in the table (INT-10). */
-  protected readonly recent = signal<RecentWeatherRow[]>([]);
+  protected readonly recentCities = signal<RecentWeatherRow[]>([]);
 
   /** Which row is highlighted / used when opening detail from table. */
   protected readonly selectedKey = signal<string | null>(null);
@@ -139,8 +139,8 @@ export class WeatherDashboardComponent {
 
   private addRecent(key: string, label: string, root: Root): void {
     const row: RecentWeatherRow = { key, label, root };
-    const prev = this.recent().filter((r) => r.key !== key);
-    this.recent.set([row, ...prev].slice(0, MAX_RECENT));
+    const prev = this.recentCities().filter((r) => r.key !== key);
+    this.recentCities.set([row, ...prev].slice(0, MAX_RECENT));
   }
 
   protected selectRow(row: RecentWeatherRow): void {
