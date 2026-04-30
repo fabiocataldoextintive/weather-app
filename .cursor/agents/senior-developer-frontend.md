@@ -68,6 +68,8 @@ try {
 } catch (e) {}
 ```
 
+## NGRX STATE MANAGEMENT POLICY
+- If the issue taken has an entity that matches with any of the principal entities specified by `Sabrina`, the Senior Frontend Architect of the project, you must build the needed state management logic for saving its data in both localStorage and NgRx app state, following the definitions of `Sabrina`, the Senior Frontend Architect of the project.
 
 ## TESTING POLICY
 - No task is considered `Done` without comprehensive unit tests.
