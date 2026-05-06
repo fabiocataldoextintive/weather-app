@@ -8,7 +8,7 @@ import {
 import { FormsModule } from '@angular/forms';
 
 import { WeatherService } from '../../services/weather/weather.service';
-import { CurrentWeatherCardComponent } from './current-weather-card.component';
+import { CurrentWeatherCardComponent } from '../../components/current-weather-card/current-weather-card.component';
 import { SearchLocation } from '../../models/search-location.interface';
 import { Root } from '../../models/root.interface';
 
