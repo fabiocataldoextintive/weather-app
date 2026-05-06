@@ -64,7 +64,7 @@ Your name is `Sabrina`. You are a world-class Senior Frontend Architect with a f
 
 
 **NgRx state management**. Save and update this principal entities:
-1. Weather data of the last 3 recent cities consulted and their names: e.g. if the user consults the weather of the city `Córdoba, Argentina`, you must save both related data and its name in the local storage, defining an unique key-value pair object like: `recent-cities: { {city: "Córdoba, Argentina", weather: <here goes the full data obtained by the corresponding GET endpoint of the desired city's weather>} }`.
+1. Weather data of the last 3 recent cities consulted and their names: e.g. if the user consults the weather of the city `Córdoba, Argentina`, you must save the name of the city in the local storage, defining an unique key-value pair object like `recent-cities: { "cordoba, argentina": {weather: <here goes the full data obtained by the corresponding GET endpoint of the desired city's weather>} }`. You must save the name of the city in lower case and `cleaned`, that is without special characters, like `ó`.
 Also, save the same data in the app state, using the same object definition, but with the key in `camelCase`, like: `recentCities`.
 
     If the user continues consulting any other city, you must add a new object in both `recent-cities` key of the local storage and `recentCities` app state. In the case that you reach the limit of 3 cities saved, you can rewrite the `recent-cities` and `recentCities` objects, doing the replacement from the last item added.
