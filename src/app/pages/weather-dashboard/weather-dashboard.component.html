@@ -64,7 +64,7 @@
     <p class="status status--error" role="alert">{{ weatherError() }}</p>
   }
 
-  @if (viewMode() === 'table' && recent().length > 0) {
+  @if (viewMode() === 'table' && recentCities().length > 0) {
     <div class="table-wrap">
       <table class="results-table">
         <thead>
@@ -76,7 +76,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (row of recent(); track row.key) {
+          @for (row of recentCities(); track row.key) {
             <tr
               class="results-table__row"
               [ngClass]="{ 'results-table__row--selected': row.key === selectedKey() }"
@@ -91,7 +91,7 @@
         </tbody>
       </table>
     </div>
-  } @else if (viewMode() === 'table' && recent().length === 0 && !loadingWeather()) {
+  } @else if (viewMode() === 'table' && recentCities().length === 0 && !loadingWeather()) {
     <p class="status status--muted">No saved results yet. Search for a city above.</p>
   }
 

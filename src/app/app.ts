@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-
-import { WeatherDashboardComponent } from './pages/weather/weather-dashboard.component';
+import { WeatherDashboardComponent } from './pages/weather-dashboard/weather-dashboard.component';
 
 @Component({
   selector: 'app-root',
