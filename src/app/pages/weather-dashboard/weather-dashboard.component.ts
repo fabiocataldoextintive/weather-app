@@ -11,8 +11,9 @@ import { WeatherService } from '../../services/weather/weather.service';
 import { CurrentWeatherCardComponent } from '../../components/current-weather-card/current-weather-card.component';
 import { SearchLocation } from '../../models/search-location.interface';
 import { Root } from '../../models/root.interface';
+import { cleanText } from '../../helpers/clean-text';
 
-const MAX_RECENT = 10;
+const MAX_RECENT = 3;
 const MIN_QUERY_LEN = 2;
 
 interface RecentWeatherRow {
@@ -82,25 +83,9 @@ export class WeatherDashboardComponent {
     this.showSuggestions.set(false);
     this.suggestions.set([]);
     const q = `${loc.lat},${loc.lon}`;
-    const label = `${loc.name}, ${loc.country}`;
+    const label = cleanText(`${loc.name}, ${loc.country}`);
     this.searchText.set(label);
     this.fetchCurrent(q, label);
-  }
-
-  /** INT-5: submit / Enter — validate before hitting current weather. */
-  protected submitSearch(): void {
-    const raw = this.searchText().trim();
-    this.validationMessage.set(null);
-    if (raw.length === 0) {
-      this.validationMessage.set('Enter a city name before searching.');
-      return;
-    }
-    if (raw.length < MIN_QUERY_LEN) {
-      this.validationMessage.set(`Type at least ${MIN_QUERY_LEN} characters.`);
-      return;
-    }
-    this.showSuggestions.set(false);
-    this.fetchCurrent(raw, raw);
   }
 
   protected onSearchKeydown(ev: KeyboardEvent): void {
@@ -112,8 +97,6 @@ export class WeatherDashboardComponent {
       const list = this.suggestions();
       if (this.showSuggestions() && list.length > 0) {
         this.pickLocation(list[0]);
-      } else {
-        this.submitSearch();
       }
     }
   }
