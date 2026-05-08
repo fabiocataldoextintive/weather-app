@@ -1,23 +1,17 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { provideMockStore } from '@ngrx/store/testing';
 
 import { App } from './app';
-import type { Root } from './core/weather/models/root.interface';
-import type { SearchLocation } from './core/weather/models/search-location.interface';
-import { WeatherService } from './core/weather/weather.service';
+import { initialWeatherState } from './store/weather/weather.state';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
-        {
-          provide: WeatherService,
-          useValue: {
-            getCurrent: () => of({} as Root),
-            searchLocations: () => of([] as SearchLocation[]),
-          },
-        },
+        provideMockStore({
+          initialState: { weather: initialWeatherState },
+        }),
       ],
     }).compileComponents();
   });
