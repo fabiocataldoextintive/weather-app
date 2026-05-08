@@ -40,7 +40,7 @@
     <button
       type="button"
       class="view-toggle__btn"
-      [class.view-toggle__btn--active]="viewMode() === 'table'"
+      [class.view-toggle__btn--active]="visualizationMode() === 'table'"
       (click)="setView('table')"
     >
       Table
@@ -48,8 +48,8 @@
     <button
       type="button"
       class="view-toggle__btn"
-      [class.view-toggle__btn--active]="viewMode() === 'detail'"
-      (click)="setView('detail')"
+      [class.view-toggle__btn--active]="visualizationMode() === 'detailed'"
+      (click)="setView('detailed')"
     >
       Detail
     </button>
@@ -63,44 +63,11 @@
     <p class="status status--error" role="alert">{{ weatherError() }}</p>
   }
 
-  @if (viewMode() === 'table' && recentCities().length > 0) {
-    <div class="table-wrap">
-      <table class="results-table">
-        <thead>
-          <tr>
-            <th scope="col">City</th>
-            <th scope="col">Temp (°C)</th>
-            <th scope="col">Condition</th>
-            <th scope="col">Local time</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (row of recentCities(); track row.key) {
-            <tr
-              class="results-table__row"
-              [ngClass]="{ 'results-table__row--selected': row.key === selectedKey() }"
-              (click)="selectRow(row)"
-            >
-              <td>{{ row.label }}</td>
-              <td>{{ row.root.current.temp_c }}</td>
-              <td>{{ row.root.current.condition.text }}</td>
-              <td>{{ row.root.location.localtime }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  } @else if (viewMode() === 'table' && recentCities().length === 0 && !loadingWeather()) {
-    <p class="status status--muted">No saved results yet. Search for a city above.</p>
+  @if (visualizationMode() === 'table') {
+    <app-weather-results-table />
   }
 
-  @if (viewMode() === 'detail') {
-    <section class="detail-panel" aria-label="Detailed weather">
-      @if (displayRoot(); as root) {
-        <app-current-weather-card [root]="root" />
-      } @else if (!loadingWeather() && !weatherError() && !validationMessage()) {
-        <p class="status status--muted">Search for a city to see the forecast.</p>
-      }
-    </section>
+  @if (visualizationMode() === 'detailed') {
+    <app-weather-detail-panel />
   }
 </div>

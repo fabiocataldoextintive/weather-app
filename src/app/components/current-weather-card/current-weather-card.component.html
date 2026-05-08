@@ -1,6 +1,19 @@
 <article class="card">
   <header class="card__header">
-    <h2 class="card__title">{{ titleLine() }}</h2>
+    <div class="card__title-row">
+      <h2 class="card__title">{{ titleLine() }}</h2>
+      @if (favoriteLabel()) {
+        <button
+          type="button"
+          class="card__fav"
+          [attr.aria-pressed]="isFavorite()"
+          [class.card__fav--on]="isFavorite()"
+          (click)="toggleFavorite()"
+        >
+          {{ isFavorite() ? '★' : '☆' }}
+        </button>
+      }
+    </div>
     <p class="card__time">Local time: {{ root().location.localtime }}</p>
   </header>
 

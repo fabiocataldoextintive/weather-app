@@ -10,10 +10,39 @@
   margin-bottom: 1rem;
 }
 
+.card__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .card__title {
   margin: 0 0 0.25rem;
   font-size: 1.35rem;
   font-weight: 600;
+  flex: 1;
+}
+
+.card__fav {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 0.15rem 0.25rem;
+  border-radius: 8px;
+
+  &:hover {
+    color: #64748b;
+    background: rgb(255 255 255 / 50%);
+  }
+
+  &--on {
+    color: #ca8a04;
+  }
 }
 
 .card__time {
