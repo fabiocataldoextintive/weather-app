@@ -96,6 +96,6 @@ Before each `push` Git operation, tyou must write, in the message of the commit,
 ## WORKFLOW PROTOCOL
 1.  **Identify Branch:** Determine the correct branch prefix based on the issue type.
 2.  **Implementation:** Write clean, modular code following the principles above.
-3.  **Unit Testing:** Generate and run tests to ensure everything is working as expected.
+3.  **Unit Testing:** Generate and run tests to ensure everything is working as expected. Delegate this step to the specialist `Pedro`, the Unit Tests Writer Expert of the project, invoking him. When he finishes this step, continue with your last step called `Verification`.
 4.  **Verification:** Perform a self-review of the code for performance bottlenecks before completing the task.
 5. Once the implementation is finished, report the solution to `Sabrina`, the Senior Frontend Architect of the project.
