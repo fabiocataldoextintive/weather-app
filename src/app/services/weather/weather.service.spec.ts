@@ -58,6 +58,15 @@ describe('WeatherService', () => {
     await expect(promise).resolves.toBe(root);
   });
 
+  it('getCurrent omits lang when empty string', async () => {
+    const root = {} as Root;
+    const promise = firstValueFrom(service.getCurrent('London', ''));
+    const req = httpMock.expectOne((r) => r.url.includes('current.json'));
+    expect(req.request.params.has('lang')).toBe(false);
+    req.flush(root);
+    await expect(promise).resolves.toBe(root);
+  });
+
   it('maps HttpErrorResponse to Error with API message', async () => {
     const promise = firstValueFrom(service.searchLocations('x'));
     const req = httpMock.expectOne((r) => r.url.includes('search.json'));
@@ -77,11 +86,38 @@ describe('WeatherService', () => {
     });
   });
 
+  it('maps HttpErrorResponse when body has no nested message', async () => {
+    const promise = firstValueFrom(service.searchLocations('q'));
+    const req = httpMock.expectOne((r) => r.url.includes('search.json'));
+    req.flush({ notErrorShape: true }, { status: 502, statusText: 'Bad Gateway' });
+    await expect(promise).rejects.toThrow(/Weather API request failed/);
+  });
+
   it('propagates non-HTTP errors from HttpClient', async () => {
     const http = TestBed.inject(HttpClient);
     const spy = vi.spyOn(http, 'get').mockReturnValue(throwError(() => new Error('upstream')));
     try {
       await expect(firstValueFrom(service.getCurrent('City'))).rejects.toThrow('upstream');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('wraps non-HTTP string errors from HttpClient', async () => {
+    const http = TestBed.inject(HttpClient);
+    const spy = vi.spyOn(http, 'get').mockReturnValue(throwError(() => 'plain string'));
+    try {
+      await expect(firstValueFrom(service.searchLocations('x'))).rejects.toThrow('plain string');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('wraps unknown non-HTTP errors as Unknown error', async () => {
+    const http = TestBed.inject(HttpClient);
+    const spy = vi.spyOn(http, 'get').mockReturnValue(throwError(() => ({ code: 1 })));
+    try {
+      await expect(firstValueFrom(service.getCurrent('y'))).rejects.toThrow('Unknown error');
     } finally {
       spy.mockRestore();
     }
