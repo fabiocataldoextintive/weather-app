@@ -53,8 +53,7 @@ export class WeatherEffects {
         if (qApi.length < MIN_SEARCH_QUERY_LEN || countLettersAndDigits(qApi) < MIN_SEARCH_QUERY_LEN) {
           return of(
             weatherActions.loadCurrentWeatherFailure({
-              userMessage:
-                'That search is not valid. Use letters or numbers (for example a city name or coordinates).',
+              userMessage: $localize`:@@err.invalidSearchQuery:That search is not valid. Use letters or numbers (for example a city name or coordinates).`,
             }),
           );
         }

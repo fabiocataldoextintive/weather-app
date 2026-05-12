@@ -3,10 +3,10 @@
     <table class="results-table">
       <thead>
         <tr>
-          <th scope="col">City</th>
-          <th scope="col">Temp (°C)</th>
-          <th scope="col">Condition</th>
-          <th scope="col">Local time</th>
+          <th scope="col" i18n="@@table.colCity">City</th>
+          <th scope="col" i18n="@@table.colTempC">Temp (°C)</th>
+          <th scope="col" i18n="@@table.colCondition">Condition</th>
+          <th scope="col" i18n="@@table.colLocalTime">Local time</th>
         </tr>
       </thead>
       <tbody>
@@ -26,5 +26,5 @@
     </table>
   </div>
 } @else if (recentCitiesCount() === 0 && !loadingWeather()) {
-  <p class="status status--muted">No saved results yet. Search for a city above.</p>
+  <p class="status status--muted" i18n="@@table.emptyHint">No saved results yet. Search for a city above.</p>
 }

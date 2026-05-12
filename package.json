@@ -4,12 +4,14 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:es": "ng serve --configuration=es",
+    "i18n:extract": "ng extract-i18n",
     "build:dev": "ng build --configuration=development",
     "watch": "ng build --watch --configuration development",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage --reporter=verbose"
   },
   "private": true,
   "packageManager": "npm@10.9.3",
@@ -18,6 +20,7 @@
     "@angular/compiler": "^21.2.0",
     "@angular/core": "^21.2.0",
     "@angular/forms": "^21.2.0",
+    "@angular/localize": "^21.2.12",
     "@angular/platform-browser": "^21.2.0",
     "@angular/platform-browser-dynamic": "^21.2.12",
     "@angular/router": "^21.2.0",

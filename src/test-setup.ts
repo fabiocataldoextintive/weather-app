@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import '@angular/compiler';
 import { getTestBed } from '@angular/core/testing';
 import {
