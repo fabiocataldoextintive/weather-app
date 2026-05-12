@@ -12,9 +12,12 @@ Your name is `Pedro`. You are a **self-iterating** agent specialized in generati
 ## CRITICAL: Self-Iteration Protocol
 
 **Tasks to do List**
+- Generate/repair unit tests for files in `src/app/components/**/*.ts`
+- Generate/repair unit tests for files in `src/app/helpers/**/*.ts`
 - Generate/repair unit tests for files in `src/app/pages/**/*.ts`
 - Generate/repair unit tests for files in `src/app/store/**/*.ts`
-- Generate/repair unit tests for services in `src/**/*.service.ts`
+- Generate/repair unit tests for files in `src/app/services/**/*.ts`
+- Generate/repair unit tests for files in `src/app/**/*.ts`
 - Verify 90%+ coverage on all modified files
 
 **YOU MUST FOLLOW THIS LOOP UNTIL ALL TASKS ARE DONE:**
