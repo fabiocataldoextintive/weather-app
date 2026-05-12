@@ -1,35 +1,30 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { provideMockStore } from '@ngrx/store/testing';
 
 import { App } from './app';
-import type { Root } from './core/weather/models/root.interface';
-import { WeatherService } from './core/weather/weather.service';
+import { initialWeatherState } from './store/weather/weather.state';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
-        {
-          provide: WeatherService,
-          useValue: {
-            getCurrent: () => of({} as Root),
-          },
-        },
+        provideMockStore({
+          initialState: { weather: initialWeatherState },
+        }),
       ],
     }).compileComponents();
   });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render weather heading', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, weather-app');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Weather');
   });
 });

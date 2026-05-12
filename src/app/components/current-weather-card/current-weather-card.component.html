@@ -1,0 +1,50 @@
+<article class="card">
+  <header class="card__header">
+    <div class="card__title-row">
+      <h2 class="card__title">{{ titleLine() }}</h2>
+      @if (favoriteLabel()) {
+        <button
+          type="button"
+          class="card__fav"
+          [attr.aria-pressed]="isFavorite()"
+          [class.card__fav--on]="isFavorite()"
+          (click)="toggleFavorite()"
+          i18n-aria-label="@@card.favoriteToggle"
+          aria-label="Toggle favorite"
+        >
+          {{ isFavorite() ? '★' : '☆' }}
+        </button>
+      }
+    </div>
+    <p class="card__time" i18n="@@card.localTime">Local time: {{ root().location.localtime }}</p>
+  </header>
+
+  <div class="card__main">
+    @if (iconSrc()) {
+      <img
+        class="card__icon"
+        [src]="iconSrc()"
+        width="128"
+        height="128"
+        i18n-alt="@@card.weatherIconAlt"
+        alt="Weather condition icon"
+      />
+    }
+    <div class="card__temps">
+      <p class="card__temp card__temp--c">{{ root().current.temp_c | number: '1.0-1' }} °C</p>
+      <p class="card__temp card__temp--f">{{ root().current.temp_f | number: '1.0-1' }} °F</p>
+      <p class="card__condition">{{ root().current.condition.text }}</p>
+    </div>
+  </div>
+
+  <dl class="card__details">
+    <div class="card__detail">
+      <dt i18n="@@card.wind">Wind</dt>
+      <dd>{{ root().current.wind_kph | number: '1.0-0' }} km/h {{ root().current.wind_dir }}</dd>
+    </div>
+    <div class="card__detail">
+      <dt i18n="@@card.humidity">Humidity</dt>
+      <dd>{{ root().current.humidity }}%</dd>
+    </div>
+  </dl>
+</article>

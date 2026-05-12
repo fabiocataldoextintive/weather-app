@@ -1,0 +1,64 @@
+:host {
+  display: block;
+}
+
+.status {
+  margin: 0;
+  font-size: 0.95rem;
+
+  &--muted {
+    color: #64748b;
+    text-align: center;
+  }
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th,
+  td {
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  th {
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #64748b;
+  }
+
+  &__row {
+    cursor: pointer;
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    &--selected {
+      background: #e0f2fe;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .results-table {
+    font-size: 0.85rem;
+
+    th,
+    td {
+      padding: 0.5rem;
+    }
+  }
+}

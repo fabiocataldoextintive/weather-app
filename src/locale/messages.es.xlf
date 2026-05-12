@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="es">
+  <file id="ngi18n" original="ng.template">
+    <unit id="card.favoriteToggle">
+      <segment>
+        <source>Toggle favorite</source>
+        <target>Cambiar favorito</target>
+      </segment>
+    </unit>
+    <unit id="card.localTime">
+      <segment>
+        <source>Local time: <ph id="0" equiv="INTERPOLATION" disp="{{ root().location.localtime }}"/></source>
+        <target>Hora local: <ph id="0" equiv="INTERPOLATION" disp="{{ root().location.localtime }}"/></target>
+      </segment>
+    </unit>
+    <unit id="card.weatherIconAlt">
+      <segment>
+        <source>Weather condition icon</source>
+        <target>Icono del estado del tiempo</target>
+      </segment>
+    </unit>
+    <unit id="card.wind">
+      <segment>
+        <source>Wind</source>
+        <target>Viento</target>
+      </segment>
+    </unit>
+    <unit id="card.humidity">
+      <segment>
+        <source>Humidity</source>
+        <target>Humedad</target>
+      </segment>
+    </unit>
+    <unit id="dashboard.title">
+      <segment>
+        <source>Weather</source>
+        <target>Tiempo</target>
+      </segment>
+    </unit>
+    <unit id="dashboard.hint">
+      <segment>
+        <source>Search for a city and pick a suggestion, or press Enter.</source>
+        <target>Busca una ciudad y elige una sugerencia, o pulsa Entrar.</target>
+      </segment>
+    </unit>
+    <unit id="dashboard.searchSection">
+      <segment>
+        <source>City search</source>
+        <target>Búsqueda de ciudad</target>
+      </segment>
+    </unit>
+    <unit id="dashboard.cityLabel">
+      <segment>
+        <source>City</source>
+        <target>Ciudad</target>
+      </segment>
+    </unit>
+    <unit id="dashboard.viewToggle">
+      <segment>
+        <source>Results layout</source>
+        <target>Diseño de resultados</target>
+      </segment>
+    </unit>
+    <unit id="dashboard.viewTable">
+      <segment>
+        <source> Table </source>
+        <target> Tabla </target>
+      </segment>
+    </unit>
+    <unit id="dashboard.viewDetail">
+      <segment>
+        <source> Detail </source>
+        <target> Detalle </target>
+      </segment>
+    </unit>
+    <unit id="dashboard.loading">
+      <segment>
+        <source>Loading weather…</source>
+        <target>Cargando el tiempo…</target>
+      </segment>
+    </unit>
+    <unit id="detail.section">
+      <segment>
+        <source>Detailed weather</source>
+        <target>Tiempo detallado</target>
+      </segment>
+    </unit>
+    <unit id="detail.emptyHint">
+      <segment>
+        <source>Search for a city to see the forecast.</source>
+        <target>Busca una ciudad para ver la previsión.</target>
+      </segment>
+    </unit>
+    <unit id="table.colCity">
+      <segment>
+        <source>City</source>
+        <target>Ciudad</target>
+      </segment>
+    </unit>
+    <unit id="table.colTempC">
+      <segment>
+        <source>Temp (°C)</source>
+        <target>Temp. (°C)</target>
+      </segment>
+    </unit>
+    <unit id="table.colCondition">
+      <segment>
+        <source>Condition</source>
+        <target>Estado</target>
+      </segment>
+    </unit>
+    <unit id="table.colLocalTime">
+      <segment>
+        <source>Local time</source>
+        <target>Hora local</target>
+      </segment>
+    </unit>
+    <unit id="table.emptyHint">
+      <segment>
+        <source>No saved results yet. Search for a city above.</source>
+        <target>Aún no hay resultados guardados. Busca una ciudad arriba.</target>
+      </segment>
+    </unit>
+    <unit id="err.locationNotFound">
+      <segment>
+        <source>That location could not be found. Try another city.</source>
+        <target>No se encontró esa ubicación. Prueba con otra ciudad.</target>
+      </segment>
+    </unit>
+    <unit id="err.apiLoadPrefix">
+      <segment>
+        <source>Weather could not be loaded: </source>
+        <target>No se pudo cargar el tiempo: </target>
+      </segment>
+    </unit>
+    <unit id="err.generic">
+      <segment>
+        <source>Something went wrong. Check your connection and try again.</source>
+        <target>Algo salió mal. Comprueba la conexión e inténtalo de nuevo.</target>
+      </segment>
+    </unit>
+    <unit id="err.invalidSearchQuery">
+      <segment>
+        <source>That search is not valid. Use letters or numbers (for example a city name or coordinates).</source>
+        <target>Esa búsqueda no es válida. Usa letras o números (por ejemplo un nombre de ciudad o coordenadas).</target>
+      </segment>
+    </unit>
+  </file>
+</xliff>

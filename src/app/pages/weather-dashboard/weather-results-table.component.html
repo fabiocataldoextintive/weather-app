@@ -1,0 +1,30 @@
+@if (recentCitiesCount() > 0) {
+  <div class="table-wrap">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th scope="col" i18n="@@table.colCity">City</th>
+          <th scope="col" i18n="@@table.colTempC">Temp (°C)</th>
+          <th scope="col" i18n="@@table.colCondition">Condition</th>
+          <th scope="col" i18n="@@table.colLocalTime">Local time</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of recentCitiesOrdered(); track row.key) {
+          <tr
+            class="results-table__row"
+            [ngClass]="{ 'results-table__row--selected': row.key === selectedKey() }"
+            (click)="selectRow(row)"
+          >
+            <td>{{ row.label }}</td>
+            <td>{{ row.root.current.temp_c }}</td>
+            <td>{{ row.root.current.condition.text }}</td>
+            <td>{{ row.root.location.localtime }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else if (recentCitiesCount() === 0 && !loadingWeather()) {
+  <p class="status status--muted" i18n="@@table.emptyHint">No saved results yet. Search for a city above.</p>
+}

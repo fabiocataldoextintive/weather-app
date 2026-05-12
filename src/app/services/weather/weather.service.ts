@@ -2,13 +2,23 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 
-import type { Root } from './models/root.interface';
+import { Root } from '../../models/root.interface';
+import { SearchLocation } from '../../models/search-location.interface';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class WeatherService {
   private readonly http = inject(HttpClient);
   private readonly apiKey = import.meta.env.NG_APP_WEATHER_API_KEY;
+
+  /**
+   * GET `/search.json` — autocomplete locations.
+   */
+  searchLocations(q: string): Observable<SearchLocation[]> {
+    const url = `${environment.baseUrl}/search.json`;
+    const params = new HttpParams().set('key', this.apiKey).set('q', q.trim());
+    return this.http.get<SearchLocation[]>(url, { params }).pipe(catchError((err) => this.handleError(err)));
+  }
 
   /**
    * GET `/current.json` — see https://www.weatherapi.com/docs/
