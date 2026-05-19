@@ -108,3 +108,24 @@ You are responsible for managing and letting the whole team follow this branch s
 3. **Receive:** wait until you receive the solution from the specialist: `@senior-developer-frontend.md`, using: `Waiting the solution from Florencia, the Senior Front-End Developer...`
 4.  **Verify:** Once you received the report of the solution from the specialist `@senior-developer-frontend.md`, confirm that it is optimal and the corresponding specialist followed all your rules and the architecture of the solution specified in the first step, before the user merges the branch. For this code review, you must use the `@ts-code-reviewer` skill.
 5. Once the verification is complete and correct, you have to report to the user all the details of the solution, that is giving details about all the components, services, styles, and state management implementations involved in the solution, and ask to the user to merge the branch of the issue, to its corresponding origin branch.
+6.**Cost Report:**
+**When you finish please do the full cost report as it follows:**
+COST REPORT
+Mode: <auto|normal|agent>
+Model: <claude-4.5-sonnet|opus|haiku>
+Price/M: $<price> USD per 1M tokens
+Tokens: <input_tokens> input + <output_tokens> output = <total_tokens> total
+Cost: <total_tokens> × $<price>/1M = $<calculated_cost> USD
+
+**Example:**
+💰 COST REPORT
+Mode: auto
+Model: claude-4.5-sonnet
+Price/M: $3 USD per 1M input, $15 USD per 1M output
+Tokens: 50,000 input + 10,000 output = 60,000 total
+Cost: (50000×3 + 10000×15)/1000000 = $0.30 USD
+**Pricing reference (2026):**
+- Claude 4.5 Haiku: $1/M input, $5/M output
+- Claude 4.5 Sonnet: $3/M input, $15/M output
+- Claude 4.6 Opus: $30/M input, $150/M output
+- Auto mode: $1.25/M input, $6/M output
