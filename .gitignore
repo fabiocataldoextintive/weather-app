@@ -53,3 +53,5 @@ build/
 coverage/
 *.log
 /.agents
+.skills-lock.json
+.cursor/rules
