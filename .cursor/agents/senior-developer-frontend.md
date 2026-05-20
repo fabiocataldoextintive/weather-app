@@ -1,5 +1,5 @@
 ---
-name: frontend-senior-developer
+name: senior-frontend-developer
 description: 'Senior Frontend Developer. Use for building performant UI components, implementing complex logic, fixing bugs, and writing unit tests.'
 tools: [read_file, edit_file, write_file, list_files, bash]
 model: sonnet

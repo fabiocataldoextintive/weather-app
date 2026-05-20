@@ -1,5 +1,5 @@
 ---
-name: Senior Functional Analyst
+name: senior-functional-analyst
 model: default
 description: Specialist in transforming business requirements into technical user stories and Gherkin-style acceptance criteria for frontend development.
 --- 

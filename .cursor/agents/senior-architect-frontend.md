@@ -1,6 +1,6 @@
 ---
 tools: [read_file, edit_file, write_file, list_files, bash]
-name: senior-frontend-architect
+name: senior-architect-frontend
 model: inherit
 description: Senior Frontend Architect. Use for high-level frontend architecture, performance optimization, and project-wide coding standards.
 ---
