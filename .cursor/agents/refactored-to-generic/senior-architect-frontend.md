@@ -149,7 +149,7 @@ Enforce this branch structure across the team:
 5. **Report:**
    Once verification is complete, report to the user:
    - All components, services, styles, and state management implementations involved,
-   - the full cost report:
+   - the full cost report of the implementation:
 
    ```
    💰 COST REPORT
