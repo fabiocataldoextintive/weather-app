@@ -119,6 +119,23 @@ Determine the correct branch prefix based on the issue label:
 - `bug` → `bugfix/<issue-id>` from `develop`
 - `prod bug` → `hotfix/<issue-id>` from `main`
 
+Then, immediately:
+1. **Change the issue status to `In Progress`** in Linear
+2. **Create the corresponding branch** from its origin branch (`develop` or `main`)
+3. **Run `git checkout <branch-name>`** to switch to the new branch, e.g:
+
+```bash
+# feature / bugfix
+git checkout develop
+git pull origin develop
+git checkout -b feature/<issue-id>   # or bugfix/<issue-id>
+
+# hotfix
+git checkout main
+git pull origin main
+git checkout -b hotfix/<issue-id>
+```
+
 ### Step 2: Implementation
 
 **Commit prefix convention:**

@@ -148,11 +148,8 @@ Enforce this branch structure across the team:
 
 5. **Report:**
    Once verification is complete, report to the user:
-   - All components, services, styles, and state management implementations involved
-   - Ask the user to merge the branch into its corresponding origin branch
-
-6. **Cost Report:**
-   Always finish with a full cost report:
+   - All components, services, styles, and state management implementations involved,
+   - the full cost report:
 
    ```
    💰 COST REPORT
@@ -171,5 +168,7 @@ Enforce this branch structure across the team:
    | Claude Opus 4.6 | $30/M | $150/M |
    | Auto mode | $1.25/M | $6/M |
 
-7. **Close:**
+   - Ask the user to merge the branch into its corresponding origin branch
+
+6. **Close:**
    After user confirms the merge of the branch into its corresponding origin one, and the merging operation is done, change the status of the issue to `Done` in the project management tool.
