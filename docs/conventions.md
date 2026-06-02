@@ -28,6 +28,7 @@
 - Side-effect-only effects use `{ dispatch: false }` (persistence)
 - Validation messages and API errors are **user-facing strings** (often `$localize`)
 - Minimum search length: `MIN_SEARCH_QUERY_LEN = 2` (letters/digits counted after sanitize)
+- Search history table pagination: `RECENT_CITIES_PAGE_SIZE = 25` (client-side slice in `WeatherResultsTableComponent`)
 
 ## HTTP & errors
 

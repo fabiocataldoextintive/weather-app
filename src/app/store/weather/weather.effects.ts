@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, debounceTime, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
+import { catchError, debounceTime, filter, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
 
 import { countLettersAndDigits, sanitizeWeatherSearchInput } from '../../helpers/weather-search-query';
 import { WeatherService } from '../../services/weather/weather.service';
@@ -42,6 +42,18 @@ export class WeatherEffects {
     this.actions$.pipe(
       ofType(weatherActions.suggestionPicked),
       map(({ q, label }) => weatherActions.loadCurrentWeather({ q, label })),
+    ),
+  );
+
+  readonly recentRowSelectedLoadsWeather$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(weatherActions.recentRowSelected),
+      withLatestFrom(this.store.select(weatherFeature.selectRecentCities)),
+      filter(([{ key }, recentCities]) => Boolean(recentCities[key])),
+      map(([{ key }, recentCities]) => {
+        const row = recentCities[key];
+        return weatherActions.loadCurrentWeather({ q: key, label: row.label });
+      }),
     ),
   );
 

@@ -73,14 +73,9 @@ const weatherReducer = createReducer(
     activeLocationLabel: null,
   })),
   on(weatherActions.recentRowSelected, (state, { key }) => {
-    const row = state.recentCities[key];
-    if (!row) return state;
+    if (!state.recentCities[key]) return state;
     return {
       ...state,
-      selectedKey: key,
-      currentWeather: row.root,
-      currentError: null,
-      activeLocationLabel: row.label,
       visualizationMode: 'detailed',
     };
   }),
