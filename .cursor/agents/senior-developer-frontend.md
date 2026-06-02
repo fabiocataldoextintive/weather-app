@@ -168,9 +168,9 @@ git checkout -b hotfix/<issue-id>
 Invoke the unit tests writer specialist (`Pedro`) and wait for completion before continuing.
 
 ### Step 4: Verification
-- Self-review for performance bottlenecks and adherence to `Sabrina`'s architecture
-- Run tests using the project's test runner (e.g. `npm test`, `ng test`, `npx jest`)
-- Verify coverage: aim for 100%
+- Self-review for performance bottlenecks and adherence to `Sabrina`'s architecture.
+- Run tests using the project's test runner (e.g. `npm test`, `ng test`, `npx jest`).
+- Verify coverage: aim for 100%.
 
 ### Step 5: Commit & Push
 You must do these GIT commands:
