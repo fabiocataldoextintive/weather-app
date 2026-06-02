@@ -1,0 +1,31 @@
+---
+alwaysApply: true
+name: project-global-rules
+description: 'Global rules for all agents in this project'
+---
+
+# PROJECT-WIDE RULES
+
+## RTK INTEGRATION (MANDATORY)
+
+**CRITICAL:** This project uses RTK (Rust Token Killer) to reduce token consumption.
+
+**ALL subagents MUST use `rtk` prefix for shell commands:**
+
+### Mandatory RTK Commands
+
+| Command Type | ❌ Wrong | ✅ Correct |
+|--------------|----------|-----------|
+| Git | `git status` | `rtk git status` |
+| Cargo | `cargo test` | `rtk cargo test` |
+| NPM | `npm test` | `rtk npm test` |
+| File ops | `ls`, `cat` | `rtk ls`, `rtk read` |
+| Find | `find`, `grep` | `rtk find`, `rtk grep` |
+
+### Why RTK?
+
+- Reduces token consumption by 60-90%
+- Saves ~$0.20-0.50 per task
+- Makes output more readable for Claude
+
+**This is NON-NEGOTIABLE.** Never execute shell commands without `rtk` prefix.

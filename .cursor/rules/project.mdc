@@ -1,0 +1,50 @@
+---
+description: Global project rule — documentation, context and AI behavior
+alwaysApply: true
+---
+
+# Global Project Rule
+
+## 1. Documentation as source of truth
+
+At the start of every session, ALWAYS read first all files inside `/docs/`:
+
+- `docs/project-overview.md` — goals, stack and general vision
+- `docs/architecture.md` — structure, modules and technical decisions
+- `docs/modules.md` — detail of each module and feature
+- `docs/conventions.md` — naming conventions, code patterns and standards
+
+If documentation exists → use it as the only source of truth.
+NEVER scan or re-analyze the project from scratch if `/docs/` is already populated.
+
+## 2. Initial documentation generation (first time only)
+
+If `/docs/` does not exist or is empty:
+
+1. Scan and study the ENTIRE project thoroughly (all files, folders, configs, dependencies).
+2. Generate the following files based on what was found:
+   - `docs/project-overview.md`
+   - `docs/architecture.md`
+   - `docs/modules.md`
+   - `docs/conventions.md`
+3. After generation, treat these files as the permanent source of truth for all future sessions.
+
+## 3. Documentation update after every resolved issue
+
+After EVERY resolved issue, task or change — whether handled by the main agent or any subagent —
+ALWAYS update the corresponding documentation immediately before closing the task:
+
+- New feature or component added → update `docs/modules.md` and `docs/architecture.md` if needed
+- Existing component or module modified → update the relevant section in `docs/modules.md`
+- New convention or pattern introduced → update `docs/conventions.md`
+- Architectural change → update `docs/architecture.md`
+- Stack or dependency change → update `docs/project-overview.md`
+
+The update must reflect exactly what changed, be concise, and never leave the docs outdated.
+
+## 4. General behavior
+
+- Always respond in a concise and precise manner, focused on the specific problem.
+- Do not repeat context already covered in the documentation.
+- Do not propose unsolicited architectural changes.
+- When in doubt about the project, consult `/docs/` first, then ask the developer.
