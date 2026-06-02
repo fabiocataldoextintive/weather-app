@@ -3,6 +3,7 @@ import type { SearchLocation } from '../../models/search-location.interface';
 import { cleanText } from '../../helpers/clean-text';
 
 export const MIN_SEARCH_QUERY_LEN = 2;
+export const RECENT_CITIES_PAGE_SIZE = 25;
 
 export interface RecentCity {
   key: string;

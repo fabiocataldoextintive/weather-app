@@ -101,6 +101,35 @@ describe('WeatherEffects', () => {
     expect(action).toEqual(weatherActions.loadCurrentWeather({ q: '1,2', label: 'L' }));
   });
 
+  it('recentRowSelectedLoadsWeather emits loadCurrentWeather for known row', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    const root = mockWeatherRoot();
+    const key = '40,-74';
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        recentCities: {
+          [key]: { key, label: 'NYC', root, updatedAt: 1 },
+        },
+      },
+    });
+    const emitted = firstValueFrom(effects.recentRowSelectedLoadsWeather$);
+    actions$.next(weatherActions.recentRowSelected({ key }));
+    const action = await emitted;
+    expect(action).toEqual(weatherActions.loadCurrentWeather({ q: key, label: 'NYC' }));
+  });
+
+  it('recentRowSelectedLoadsWeather ignores unknown key', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    let emitted = false;
+    effects.recentRowSelectedLoadsWeather$.subscribe(() => {
+      emitted = true;
+    });
+    actions$.next(weatherActions.recentRowSelected({ key: 'missing' }));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(emitted).toBe(false);
+  });
+
   it('loadCurrentWeather fails fast when q invalid after sanitize', async () => {
     TestBed.inject(WeatherEffects);
     actions$.next(weatherActions.loadCurrentWeather({ q: '..', label: 'x' }));

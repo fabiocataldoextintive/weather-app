@@ -52,6 +52,37 @@
   }
 }
 
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+
+  &__btn {
+    padding: 0.4rem 0.85rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.875rem;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: #f8fafc;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+
+  &__status {
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+}
+
 @media (max-width: 480px) {
   .results-table {
     font-size: 0.85rem;
@@ -60,5 +91,10 @@
     td {
       padding: 0.5rem;
     }
+  }
+
+  .table-pagination {
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 }

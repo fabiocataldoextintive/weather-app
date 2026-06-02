@@ -10,7 +10,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (row of recentCitiesOrdered(); track row.key) {
+        @for (row of pagedRows(); track row.key) {
           <tr
             class="results-table__row"
             [ngClass]="{ 'results-table__row--selected': row.key === selectedKey() }"
@@ -25,6 +25,36 @@
       </tbody>
     </table>
   </div>
+
+  @if (showPagination()) {
+    <nav
+      class="table-pagination"
+      i18n-aria-label="@@table.paginationNav"
+      aria-label="Search history pages"
+    >
+      <button
+        type="button"
+        class="table-pagination__btn"
+        [disabled]="currentPage() === 0"
+        (click)="goToPreviousPage()"
+        i18n="@@table.paginationPrev"
+      >
+        Previous
+      </button>
+      <span class="table-pagination__status" i18n="@@table.paginationStatus">
+        Page {{ currentPage() + 1 }} of {{ totalPages() }}
+      </span>
+      <button
+        type="button"
+        class="table-pagination__btn"
+        [disabled]="currentPage() >= totalPages() - 1"
+        (click)="goToNextPage()"
+        i18n="@@table.paginationNext"
+      >
+        Next
+      </button>
+    </nav>
+  }
 } @else if (recentCitiesCount() === 0 && !loadingWeather()) {
   <p class="status status--muted" i18n="@@table.emptyHint">No saved results yet. Search for a city above.</p>
 }

@@ -85,17 +85,19 @@ describe('weather reducer', () => {
     expect(next).toBe(initialWeatherState);
   });
 
-  it('recentRowSelected loads row into detail state', () => {
+  it('recentRowSelected switches to detailed view for known key', () => {
     const root = mockWeatherRoot();
     const key = 'k1';
     const base = reduce(
       initialWeatherState,
       weatherActions.loadCurrentWeatherSuccess({ q: key, label: 'L', root }),
     );
-    const cleared = reduce(base, weatherActions.loadCurrentWeather({ q: 'x', label: 'y' }));
-    const next = reduce(cleared, weatherActions.recentRowSelected({ key }));
-    expect(next.currentWeather).toEqual(root);
+    const next = reduce(
+      { ...base, visualizationMode: 'table' },
+      weatherActions.recentRowSelected({ key }),
+    );
     expect(next.visualizationMode).toBe('detailed');
+    expect(next.currentWeather).toEqual(root);
   });
 
   it('visualizationModeChanged updates mode', () => {

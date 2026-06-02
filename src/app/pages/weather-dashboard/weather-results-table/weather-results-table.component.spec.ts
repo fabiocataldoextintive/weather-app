@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 
-import { weatherActions } from '../../store/weather/weather.actions';
-import { mockWeatherRoot } from '../../store/weather/weather-test-fixtures';
-import { initialWeatherState, type RecentCity } from '../../store/weather/weather.state';
+import { weatherActions } from '../../../store/weather/weather.actions';
+import { mockWeatherRoot } from '../../../store/weather/weather-test-fixtures';
+import { initialWeatherState, RECENT_CITIES_PAGE_SIZE, type RecentCity } from '../../../store/weather/weather.state';
 import { WeatherResultsTableComponent } from './weather-results-table.component';
 
 describe('WeatherResultsTableComponent', () => {
@@ -17,6 +17,15 @@ describe('WeatherResultsTableComponent', () => {
     root: mockWeatherRoot(),
     updatedAt: 1,
   };
+
+  function makeRecentCity(index: number): RecentCity {
+    return {
+      key: `${index},${index}`,
+      label: `City ${index}`,
+      root: mockWeatherRoot(),
+      updatedAt: index,
+    };
+  }
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -85,5 +94,43 @@ describe('WeatherResultsTableComponent', () => {
       loadingWeather(): boolean;
     };
     expect(cmp.loadingWeather()).toBe(true);
+  });
+
+  it('should paginate when history exceeds page size', () => {
+    const recentCities: Record<string, RecentCity> = {};
+    for (let i = 0; i < RECENT_CITIES_PAGE_SIZE + 3; i++) {
+      const city = makeRecentCity(i);
+      recentCities[city.key] = city;
+    }
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        recentCities,
+      },
+    });
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.table-pagination')).toBeTruthy();
+    expect(el.querySelectorAll('.results-table__row').length).toBe(RECENT_CITIES_PAGE_SIZE);
+
+    const cmp = fixture.componentInstance as unknown as {
+      goToNextPage(): void;
+    };
+    cmp.goToNextPage();
+    fixture.detectChanges();
+    expect(el.querySelectorAll('.results-table__row').length).toBe(3);
+  });
+
+  it('should hide pagination when history fits one page', () => {
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        recentCities: { [row.key]: row },
+      },
+    });
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.table-pagination')).toBeNull();
   });
 });
