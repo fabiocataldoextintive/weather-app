@@ -153,6 +153,7 @@ Enforce this branch structure across the team:
 
    ```
    💰 COST REPORT
+   Issue Type: <feature|bugfix|hotfix>
    Mode: <auto|normal|agent>
    Model: <model-name>
    Price/M: $<input_price> input / $<output_price> output per 1M tokens
