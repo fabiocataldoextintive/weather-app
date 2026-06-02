@@ -1,123 +1,99 @@
-# Architecture
+# WeatherApp — Architecture
 
 ## Pattern
 
-Feature-oriented Angular SPA with **NgRx** for shared weather state. UI components are thin: they read store signals and dispatch actions. Side effects (HTTP, debounce, persistence) live in `WeatherEffects`.
+**Feature-sliced SPA** with a thin shell, one dashboard feature, shared presentational components, and a dedicated **weather NgRx feature** for all cross-cutting search/weather state.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  App (app.ts)                                           │
-│    └── WeatherDashboardComponent                        │
-│          ├── search + view toggle                       │
-│          ├── WeatherResultsTableComponent (table mode)  │
-│          └── WeatherDetailPanelComponent (detail mode)  │
-│                └── CurrentWeatherCardComponent          │
+│  App (bootstrap)                                         │
+│    └── WeatherDashboardComponent (search + view toggle)   │
+│          ├── WeatherResultsTableComponent  (table mode)  │
+│          └── WeatherDetailPanelComponent   (detail mode) │
+│                └── CurrentWeatherCardComponent           │
 └─────────────────────────────────────────────────────────┘
-                          │ dispatch / select
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│  NgRx — weatherFeature                                  │
-│    state · reducer · selectors · effects                │
-└─────────────────────────────────────────────────────────┘
-          │ HTTP                              │ localStorage
-          ▼                                   ▼
-   WeatherService                      weather.storage.ts
-          │
-          ▼
-   WeatherAPI (search.json, current.json)
+         │ dispatch/select                    │
+         ▼                                      ▼
+┌──────────────────┐    HTTP     ┌─────────────────────┐
+│  weather feature │ ◄──────────► │  WeatherService     │
+│  (store/effects) │              │  (WeatherAPI)       │
+└────────┬─────────┘              └─────────────────────┘
+         │ read/write
+         ▼
+   localStorage (recent, favorites, visualization mode)
 ```
 
 ## Bootstrap (`app.config.ts`)
 
-Providers registered at startup:
+1. `provideStore()` + `provideState(weatherFeature)` + `provideEffects(WeatherEffects)`
+2. `provideStoreDevtools` when `isDevMode()`
+3. `provideAppInitializer` — hydrates store from `localStorage` via `weatherActions.hydrateFromLocalStorage`
+4. `provideRouter(routes)` — routes array is empty (no lazy features yet)
+5. `provideHttpClient()` for API calls
 
-- `provideStore()` + `provideState(weatherFeature)` + `provideEffects(WeatherEffects)`
-- `provideStoreDevtools` (dev only, `maxAge: 60`)
-- `provideAppInitializer` — hydrates recent cities, favorites, and visualization mode from `localStorage`
-- `provideRouter(routes)` — routes array is empty; dashboard is mounted in root template
-- `provideHttpClient()`
+## State management (NgRx)
 
-## State Shape (`WeatherState`)
+**Feature key:** `weather` (`weatherFeature` in `weather.reducer.ts`)
 
-| Slice | Description |
-|-------|-------------|
-| `searchText` | Sanitized search input |
-| `suggestions` / `showSuggestions` | Autocomplete results and visibility |
-| `searchValidationMessage` | Inline validation error for search |
-| `currentStatus` | `idle` \| `loading` \| `success` \| `error` |
-| `currentWeather` | Latest `Root` response from API |
-| `currentError` | User-facing error message |
-| `selectedKey` | Query key (`lat,lon`) of active result |
-| `activeLocationLabel` | Display label for current selection |
-| `recentCities` | Map of past searches with cached weather |
-| `favoritesCities` | Map of favorited city labels |
-| `visualizationMode` | `table` \| `detailed` |
+| Slice | Role |
+|-------|------|
+| `searchText`, `suggestions`, `showSuggestions` | Autocomplete UX |
+| `searchValidationMessage` | Client-side validation feedback |
+| `currentStatus`, `currentWeather`, `currentError` | Active weather load |
+| `selectedKey`, `activeLocationLabel` | Selection / display label |
+| `recentCities` | Map keyed by query (`lat,lon`) |
+| `favoritesCities` | Map keyed by normalized city label |
+| `visualizationMode` | `'table'` \| `'detailed'` |
 
-Default visualization mode: **`detailed`**.
+**Effects (`weather.effects.ts`):**
 
-## Data Flow
+- `autocomplete$` — debounce 300ms on `searchInputChanged`; calls `searchLocations` when query ≥ 2 letters/digits
+- `pickSuggestionLoadsWeather$` — maps `suggestionPicked` → `loadCurrentWeather`
+- `loadCurrentWeather$` — sanitizes query, calls `getCurrent`, maps errors via `toWeatherUserMessage`
+- `persistRecentAndFavorites$` — writes storage after successful load or favorite toggle (no dispatch)
+- `persistVisualization$` — writes visualization mode on change (no dispatch)
 
-### Search autocomplete
+**Selectors:** `createFeature` defaults plus `selectRecentCitiesOrdered`, `selectRecentCitiesCount`.
 
-1. User types → `searchInputChanged` (input sanitized in reducer)
-2. Effect `autocomplete$` debounces 300 ms, validates min length (2 letters/digits)
-3. `WeatherService.searchLocations` → `suggestionsResolved`
-4. Dashboard renders suggestion list; Enter picks first item; Escape dismisses
+## Data flow (happy path)
 
-### Load weather
+1. User types in search → `searchInputChanged` → reducer sanitizes text → effect fetches suggestions.
+2. User picks suggestion (click or Enter on first) → `suggestionPicked` → `loadCurrentWeather` with `q = "lat,lon"` and display `label`.
+3. Success → `loadCurrentWeatherSuccess` → updates `currentWeather`, upserts `recentCities`, sets `selectedKey` → effect persists to `localStorage`.
+4. Table mode: user selects row → `recentRowSelected` → restores cached `Root` from recent map (no new API call).
+5. Detail mode: `CurrentWeatherCardComponent` can toggle favorite → `favoriteCityToggled` → persisted favorites map.
 
-1. Pick suggestion → `suggestionPicked` → effect maps to `loadCurrentWeather`
-2. Effect validates query, calls `WeatherService.getCurrent`
-3. Success → updates `currentWeather`, upserts `recentCities`, sets `selectedKey`
-4. Failure → `toWeatherUserMessage` maps API errors to i18n strings
+## Persistence (`weather.storage.ts`)
 
-### Table row click
+| Key | Content |
+|-----|---------|
+| `recent-cities` | JSON `{ recentCities: { [key]: { city, weather, updatedAt } } }` (legacy array shapes supported on read) |
+| `favorite-cities` | JSON `{ favoritesCities: { [key]: { cityLabel } } }` |
+| `visualization-mode` | `'table'` or `'detailed'` (legacy `'detail'` normalized to `'detailed'`) |
 
-1. `recentRowSelected` restores cached `Root` from `recentCities`
-2. Switches `visualizationMode` to `detailed`
+Parse/write helpers guard `localStorage` absence (tests, SSR-safe checks).
 
-### Persistence
+## API layer (`WeatherService`)
 
-| Key | Storage key | Written on |
-|-----|-------------|------------|
-| Recent cities | `recent-cities` | weather load success, favorite toggle |
-| Favorites | `favorite-cities` | same |
-| View mode | `visualization-mode` | `visualizationModeChanged` |
+- Injectable `providedIn: 'root'`
+- API key: `import.meta.env.NG_APP_WEATHER_API_KEY`
+- Errors normalized to `Error` with `Weather API request failed: …` prefix for user messaging
 
-Serialization/parsing logic and legacy format support live in `weather.storage.ts`.
+## Models
 
-## Layer Responsibilities
+Typed interfaces under `src/app/models/` mirror WeatherAPI shapes used in the app (`Root`, `Location`, `Current`, `Condition`, `SearchLocation`, `AirQuality`, etc.).
 
-| Layer | Path | Role |
-|-------|------|------|
-| Pages | `src/app/pages/` | Route-level UI, composes feature components |
-| Components | `src/app/components/` | Reusable presentational widgets |
-| Store | `src/app/store/weather/` | Actions, reducer, effects, storage, user messages |
-| Services | `src/app/services/weather/` | HTTP adapter to WeatherAPI |
-| Models | `src/app/models/` | TypeScript interfaces matching API shapes |
-| Helpers | `src/app/helpers/` | Pure utilities (sanitize, clean text) |
+## Testing architecture
 
-## API Integration
+- Unit tests colocated as `*.spec.ts` beside sources
+- Vitest config at repo root; `src/test-setup.ts` for Angular test bed
+- Store/effects/services covered with mocks and fixtures (`weather-test-fixtures.ts`)
 
-`WeatherService` builds URLs from `environment.baseUrl` and injects `import.meta.env.NG_APP_WEATHER_API_KEY`. Errors from `HttpErrorResponse` are normalized to `Error` with a `Weather API request failed:` prefix for downstream mapping.
+## Known structural notes
 
-## i18n
+Active dashboard imports live under:
 
-- Source locale: English (`en`)
-- Spanish build: `development-es` configuration localizes to `es` using `src/locale/messages.es.xlf`
-- User-facing strings use `$localize` or `i18n` attributes in templates
-- Error messages centralized in `weather-user-message.ts` and effect inline messages
+- `pages/weather-dashboard/weather-results-table/`
+- `pages/weather-dashboard/weather-detail-panel/`
 
-## Testing Architecture
-
-- **Runner:** Vitest with jsdom
-- **Pattern:** `*.spec.ts` co-located with source
-- **Coverage:** store (reducer, effects, storage), services, helpers, components
-- **Setup:** `src/test-setup.ts` configures Angular testing environment
-
-## Known Legacy Artifacts
-
-Older flat component files under `weather-dashboard/` (e.g. `weather-detail-panel.component.ts` at page root) and typo folder `weather-resultas-table/` exist alongside the canonical subfolders. Active imports use:
-
-- `weather-dashboard/weather-detail-panel/`
-- `weather-dashboard/weather-results-table/`
+Older duplicate component files still exist at the `weather-dashboard/` root and under `weather-resultas-table/` (typo); they are **not** wired by `WeatherDashboardComponent` and should be removed in a future cleanup PR.

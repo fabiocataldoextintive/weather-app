@@ -48,3 +48,26 @@ The update must reflect exactly what changed, be concise, and never leave the do
 - Do not repeat context already covered in the documentation.
 - Do not propose unsolicited architectural changes.
 - When in doubt about the project, consult `/docs/` first, then ask the developer.
+
+## 5. Report:
+   Once every documentation operation (either creation or update) is complete, report to the user:
+   - All the changes made in summary,
+   - the full cost report of the documentation operation:
+
+   ```
+   💰 COST REPORT
+   Documentation operation: <creation|update>
+   Mode: <auto|normal|agent>
+   Model: <model-name>
+   Price/M: $<input_price> input / $<output_price> output per 1M tokens
+   Tokens: <input_tokens> input + <output_tokens> output = <total_tokens> total
+   Cost: (input×price + output×price) / 1,000,000 = $<total> USD
+   ```
+
+   **Pricing reference (2026):**
+   | Model | Input | Output |
+   |---|---|---|
+   | Claude Haiku 4.5 | $1/M | $5/M |
+   | Claude Sonnet 4.6 | $3/M | $15/M |
+   | Claude Opus 4.6 | $30/M | $150/M |
+   | Auto mode | $1.25/M | $6/M |

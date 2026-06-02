@@ -1,192 +1,107 @@
-# Modules & Features
+# WeatherApp — Modules & Features
 
-## App Shell
+## App shell
 
-### `App` (`src/app/app.ts`)
+| Path | Responsibility |
+|------|----------------|
+| `src/app/app.ts` | Root component; renders `WeatherDashboardComponent` |
+| `src/app/app.config.ts` | Providers: store, weather feature, effects, router, HTTP, hydration |
+| `src/app/app.routes.ts` | Empty route table (placeholder) |
+| `src/main.ts` | Bootstrap entry |
 
-Root component. Imports only `WeatherDashboardComponent`. No router outlet — dashboard is the entire UI.
+## Feature: Weather dashboard
 
----
+**Component:** `pages/weather-dashboard/weather-dashboard.component.ts`
 
-## Page: Weather Dashboard
+- Search input bound to store (`searchText`) via `FormsModule`
+- Autocomplete list from `suggestions` / `showSuggestions`
+- Keyboard: `Escape` dismisses suggestions; `Enter` picks first suggestion
+- View toggle: table vs detailed (`visualizationModeChanged`)
+- Loading and error banners driven by `currentStatus` / `currentError`
 
-**Path:** `src/app/pages/weather-dashboard/`
+**Child — results table** (`weather-results-table/`)
 
-Main feature surface. Owns city search, suggestion dropdown, loading/error status, and view-mode toggle.
+- Lists `selectRecentCitiesOrdered`
+- Row click → `recentRowSelected` (rehydrates weather from cache)
+- Shows count via `selectRecentCitiesCount`
 
-### `WeatherDashboardComponent`
+**Child — detail panel** (`weather-detail-panel/`)
 
-| Concern | Implementation |
-|---------|----------------|
-| Search input | Two-way binding via `ngModel` + `searchInputChanged` |
-| Suggestions | Renders listbox; click or Enter selects location |
-| Keyboard | Escape dismisses suggestions |
-| View toggle | Dispatches `visualizationModeChanged` (`table` / `detailed`) |
-| Status | Shows loading spinner text and API errors |
+- Reads `currentWeather`, `activeLocationLabel`, loading/error/validation state
+- Embeds `CurrentWeatherCardComponent` when data present
 
-**Child components (conditional):**
-
-- `app-weather-results-table` when mode is `table`
-- `app-weather-detail-panel` when mode is `detailed`
-
----
-
-## Dashboard Children
-
-### `WeatherResultsTableComponent`
-
-**Path:** `weather-dashboard/weather-results-table/`
-
-Displays **recent searches** as a clickable table.
-
-| Column | Source |
-|--------|--------|
-| City | `RecentCity.label` |
-| Temp (°C) | `row.root.current.temp_c` |
-| Condition | `row.root.current.condition.text` |
-| Local time | `row.root.location.localtime` |
-
-- Rows sorted by `updatedAt` descending (via `selectRecentCitiesOrdered`)
-- Selected row highlighted when `row.key === selectedKey`
-- Row click → `recentRowSelected` (switches to detail view)
-- Empty state when no recent cities and not loading
-
-### `WeatherDetailPanelComponent`
-
-**Path:** `weather-dashboard/weather-detail-panel/`
-
-Shows detailed weather for the current selection. Wraps `CurrentWeatherCardComponent` when `currentWeather` is set. Empty hint when idle with no errors.
-
----
-
-## Shared Component
+## Shared UI
 
 ### `CurrentWeatherCardComponent`
 
-**Path:** `src/app/components/current-weather-card/`
+**Path:** `components/current-weather-card/`
 
-Presentational card for a `Root` weather response.
+- **Inputs:** `root` (required `Root`), `favoriteLabel` (optional)
+- Displays location title, condition icon (protocol-relative icons prefixed with `https:`), temperature, and favorite toggle
+- Favorite state from `selectFavoritesCities` + `favoriteCityKey(label)`
+- Dispatches `favoriteCityToggled`
 
-| Input | Purpose |
-|-------|---------|
-| `root` (required) | WeatherAPI current response |
-| `favoriteLabel` | Label used for favorite toggle (optional) |
+## Services
 
-**Features:**
+### `WeatherService`
 
-- Title from location name, region, country
-- Condition icon (protocol-relative URLs prefixed with `https:`)
-- Temp in °C and °F, condition text, wind, humidity
-- Favorite star toggle → `favoriteCityToggled`
+**Path:** `services/weather/weather.service.ts`
 
----
+| Method | API | Notes |
+|--------|-----|-------|
+| `searchLocations(q)` | `/search.json` | Trims query; errors → observable error |
+| `getCurrent(q, lang?)` | `/current.json` | Optional `lang` query param |
 
-## Store: Weather
+## Store module (`store/weather/`)
 
-**Path:** `src/app/store/weather/`
+| File | Role |
+|------|------|
+| `weather.state.ts` | State interface, `initialWeatherState`, `MIN_SEARCH_QUERY_LEN`, `favoriteCityKey`, `recentCitiesOrdered` |
+| `weather.actions.ts` | `createActionGroup` — search, load, favorites, hydration |
+| `weather.reducer.ts` | Pure transitions + `weatherFeature` |
+| `weather.effects.ts` | Side effects: API, debounce, persistence |
+| `weather.storage.ts` | `localStorage` serialization with backward-compatible parsers |
+| `weather-user-message.ts` | Maps API/HTTP errors to localized user strings |
+| `weather-test-fixtures.ts` | Shared test data |
 
-### Actions (`weather.actions.ts`)
+### Action reference (summary)
 
-| Action | Trigger |
-|--------|---------|
-| `searchInputChanged` | User types in search |
-| `suggestionsResolved` | Autocomplete effect completes |
-| `dismissSuggestions` | Escape key |
-| `suggestionPicked` | User selects suggestion |
-| `loadCurrentWeather` | Start fetch |
-| `loadCurrentWeatherSuccess` / `Failure` | API result |
-| `recentRowSelected` | Table row click |
-| `visualizationModeChanged` | View toggle |
-| `favoriteCityToggled` | Star button |
-| `hydrateFromLocalStorage` | App init |
-
-### Effects (`weather.effects.ts`)
-
-| Effect | Behavior |
-|--------|----------|
-| `autocomplete$` | 300 ms debounce, min query length 2 |
-| `pickSuggestionLoadsWeather$` | Maps pick → load |
-| `loadCurrentWeather$` | Calls API, maps errors |
-| `persistRecentAndFavorites$` | Writes to localStorage (no dispatch) |
-| `persistVisualization$` | Persists view mode (no dispatch) |
-
-### Reducer highlights
-
-- Search input sanitized on every keystroke
-- Successful load upserts into `recentCities` map keyed by query (`lat,lon`)
-- Favorites keyed by normalized label via `favoriteCityKey()`
-- `recentRowSelected` restores cached weather without new API call
-
-### Storage (`weather.storage.ts`)
-
-- Keys: `recent-cities`, `favorite-cities`, `visualization-mode`
-- Supports legacy array and object formats on read
-- `detail` legacy value normalized to `detailed`
-
-### User messages (`weather-user-message.ts`)
-
-Maps raw `Error.message` to localized user strings (location not found, API failure, generic).
-
----
-
-## Service: Weather
-
-**Path:** `src/app/services/weather/weather.service.ts`
-
-| Method | Endpoint | Returns |
-|--------|----------|---------|
-| `searchLocations(q)` | `/search.json` | `SearchLocation[]` |
-| `getCurrent(q, lang?)` | `/current.json` | `Root` |
-
-Injectable `providedIn: 'root'`. Centralized HTTP error handling.
-
----
-
-## Models
-
-**Path:** `src/app/models/`
-
-| File | Type | Usage |
-|------|------|-------|
-| `root.interface.ts` | `Root` | Top-level current weather response |
-| `location.interface.ts` | `Location` | City metadata |
-| `current.interface.ts` | `Current` | Current conditions |
-| `condition.interface.ts` | `Condition` | Icon + text |
-| `air-quality.interface.ts` | `AirQuality` | Optional on `Current` |
-| `search-location.interface.ts` | `SearchLocation` | Autocomplete item |
-
----
+- **Search:** `searchInputChanged`, `suggestionsResolved`, `dismissSuggestions`, `suggestionPicked`, `searchValidationFailed`, `clearSearchValidation`
+- **Weather load:** `loadCurrentWeather`, `loadCurrentWeatherSuccess`, `loadCurrentWeatherFailure`
+- **UX:** `recentRowSelected`, `visualizationModeChanged`, `favoriteCityToggled`
+- **Init:** `hydrateFromLocalStorage`
 
 ## Helpers
 
-**Path:** `src/app/helpers/`
+| File | Purpose |
+|------|---------|
+| `helpers/weather-search-query.ts` | `sanitizeWeatherSearchInput`, `countLettersAndDigits` (min length 2 for API) |
+| `helpers/clean-text.ts` | Normalize labels for display and favorite keys (NFD, strip accents) |
 
-| File | Function | Purpose |
-|------|----------|---------|
-| `weather-search-query.ts` | `sanitizeWeatherSearchInput` | Strip unsafe chars, normalize Unicode |
-| `weather-search-query.ts` | `countLettersAndDigits` | Validate searchable content length |
-| `clean-text.ts` | `cleanText` | Lowercase, strip accents, normalize for favorite keys |
+## Models (`models/`)
 
----
+Interfaces aligned with WeatherAPI JSON:
+
+- `root.interface.ts` — `Root { location, current }`
+- `search-location.interface.ts` — autocomplete row
+- `location.interface.ts`, `current.interface.ts`, `condition.interface.ts`, `air-quality.interface.ts`
 
 ## i18n
 
-**Path:** `src/locale/`
+- Markers in templates (`i18n`, `i18n-aria-label`) and `$localize` in effects/reducer messages
+- Source: `src/locale/messages.xlf`; Spanish: `messages.es.xlf`
+- Extract: `npm run i18n:extract`
 
-| File | Locale |
-|------|--------|
-| `messages.xlf` | Source (English) |
-| `messages.es.xlf` | Spanish |
+## Environment
 
-Extract with `npm run i18n:extract`. Template strings use `i18n="@@id"` and `$localize`:@@id:...`` in TypeScript.
-
----
-
-## Environments
-
-| File | `production` | Used when |
+| File | `production` | `baseUrl` |
 |------|--------------|-----------|
-| `environment.ts` | `true` | Production build |
-| `environment.development.ts` | `false` | Dev / test builds |
+| `environment.ts` | `true` | WeatherAPI v1 |
+| `environment.development.ts` | `false` | same (via file replacement in dev/test builds) |
 
-Both set `baseUrl: 'http://api.weatherapi.com/v1'`.
+## Tests (by area)
+
+- **Service:** `weather.service.spec.ts`
+- **Store:** `weather.state.spec.ts`, `weather.reducer.spec.ts`, `weather.actions.spec.ts`, `weather.effects.spec.ts`, `weather.storage.spec.ts`, `weather-user-message.spec.ts`
+- **Helpers:** `weather-search-query.spec.ts`, `clean-text.spec.ts`
+- **Components:** dashboard, detail panel, results table, current-weather-card specs

@@ -1,102 +1,80 @@
-# Conventions
+# WeatherApp — Conventions
 
 ## Naming
 
-| Element | Convention | Example |
-|---------|------------|---------|
-| Components | kebab-case files, `*Component` class | `weather-dashboard.component.ts` |
-| Selectors | `app-` prefix | `app-weather-dashboard` |
-| Services | kebab-case folder, `*Service` class | `weather.service.ts` |
-| Store files | feature name prefix | `weather.actions.ts`, `weather.reducer.ts` |
-| Models | `*.interface.ts` | `root.interface.ts` |
-| Tests | co-located `*.spec.ts` | `weather.effects.spec.ts` |
-| SCSS | component-scoped, BEM-like blocks | `.dashboard__header`, `.search__input` |
+| Kind | Convention | Example |
+|------|------------|---------|
+| Components | kebab-case files, `*Component` class, selector `app-*` | `weather-dashboard.component.ts`, `app-weather-dashboard` |
+| NgRx feature | `weather` feature name, `weatherFeature` export | `createFeature({ name: 'weather', ... })` |
+| Actions | `createActionGroup`, source `'Weather'` | `weatherActions.loadCurrentWeather` |
+| Interfaces | PascalCase, file `*.interface.ts` | `Root`, `SearchLocation` |
+| Storage keys | kebab-case string constants in `weather.storage.ts` | `recent-cities` |
+| Recent city key | `"lat,lon"` string from API location | Used as map key in `recentCities` |
+| Favorite key | `favoriteCityKey(cityLabel)` — cleaned lowercase label | `cleanText` + normalization |
 
-## Angular Patterns
+## Angular style
 
-- **Standalone components** — no NgModules; dependencies listed in `imports` array
-- **OnPush** change detection on dashboard and child feature components
-- **Signals from store** — `store.selectSignal(weatherFeature.selectX)` in components
-- **Signal inputs** — `input.required<T>()` on presentational components (`CurrentWeatherCardComponent`)
-- **Computed signals** — derived UI state (`isFavorite`, `iconSrc`, `titleLine`)
-- **Control flow** — `@if`, `@for` (not `*ngIf` / `*ngFor`) in templates
-- **Root app** — minimal shell; feature lives under `pages/`
+- **Standalone components** with explicit `imports` arrays
+- **OnPush** change detection on feature UI components
+- **Signals** for store selections: `store.selectSignal(weatherFeature.select…)`
+- **Inputs** on presentational components use `input()` / `input.required()` (see `CurrentWeatherCardComponent`)
+- **Control flow:** `@if`, `@for` in templates (not legacy `*ngIf` in new code)
+- **SCSS** per component (`styleUrl`); global tokens in `src/styles.scss`
 
-## NgRx Patterns
+## State conventions
 
-- Single feature: `weatherFeature` via `createFeature`
-- Actions grouped with `createActionGroup` (`source: 'Weather'`)
-- Effects use `inject()` instead of constructor DI
-- Non-dispatching effects for side effects only (`persistRecentAndFavorites$`, `persistVisualization$`)
-- Extra selectors defined in `extraSelectors` (e.g. ordered recent cities)
-- State interfaces and pure helpers in `weather.state.ts`, separate from reducer
+- UI dispatches actions; **never** mutates store state directly
+- Async work lives in **effects**; reducers stay synchronous
+- Side-effect-only effects use `{ dispatch: false }` (persistence)
+- Validation messages and API errors are **user-facing strings** (often `$localize`)
+- Minimum search length: `MIN_SEARCH_QUERY_LEN = 2` (letters/digits counted after sanitize)
 
-## State & Persistence
+## HTTP & errors
 
-- Recent cities keyed by API query string (`"${lat},${lon}"`)
-- Favorite cities keyed by `favoriteCityKey(label)` → `cleanText(label)`
-- Never store API key in state or localStorage
-- Hydration happens once in `provideAppInitializer`; writes happen in effects after success/toggle
+- `WeatherService` catches `HttpErrorResponse` and throws `Error` with a stable prefix for `toWeatherUserMessage`
+- Effects map failures to `loadCurrentWeatherFailure({ userMessage })`
+- Autocomplete errors fail silently (empty suggestions) to avoid noisy UX
 
-## HTTP & Errors
+## Environment & secrets
 
-- All WeatherAPI calls go through `WeatherService`
-- API key from `import.meta.env.NG_APP_WEATHER_API_KEY` (never hardcoded)
-- Service throws `Error` with descriptive message; effects map to user-facing i18n strings via `toWeatherUserMessage`
-- Search input sanitized before API calls (`sanitizeWeatherSearchInput`)
+- Never commit `.env` or real API keys
+- Use `NG_APP_WEATHER_API_KEY` only via `import.meta.env` (typed in `src/env.d.ts`)
+- Base URL stays in `environment*.ts` (not secret)
 
-## i18n
+## Formatting & editor
 
-- Every user-visible string in templates should have `i18n` with stable `@@id`
-- Runtime messages in TypeScript use `$localize`:@@id:Default text``
-- Error IDs prefixed with `@@err.` (e.g. `@@err.locationNotFound`)
-- Dashboard IDs prefixed with `@@dashboard.`, table with `@@table.`, card with `@@card.`
-
-## Styling
-
-- SCSS per component (`styleUrl` singular)
-- Global resets and tokens in `src/styles.scss`
-- Status classes: `.status`, `.status--loading`, `.status--error`, `.status--muted`
-- Accessibility: `role="alert"`, `aria-live`, `aria-expanded`, listbox/option roles on suggestions
+- **Prettier:** 100 print width, single quotes; Angular HTML parser for `*.html` (`.prettierrc`)
+- **EditorConfig:** 2 spaces, UTF-8, final newline (`.editorconfig`)
 
 ## Testing
 
-- **Framework:** Vitest (`describe`, `it`, `expect` — globals enabled)
-- **File naming:** `*.spec.ts` next to implementation
-- **Fixtures:** shared test data in `weather-test-fixtures.ts`
-- **Store tests:** reducer pure transitions, effect marbles/observables, storage round-trips
-- Run: `npm run test:run` for CI-style single pass
+- Framework: **Vitest** (not Karma)
+- File suffix: `*.spec.ts` next to implementation
+- Prefer testing reducers/effects/services in isolation; use `weather-test-fixtures` for API shapes
+- `localStorage` tests must account for guards in storage helpers
 
-## Environment Variables
-
-| Variable | Purpose |
-|----------|---------|
-| `NG_APP_WEATHER_API_KEY` | WeatherAPI key (`.env`, injected at build) |
-
-Declared in `src/env.d.ts`. Example in `.env.example`. Do not commit `.env`.
-
-## File Organization
+## File organization
 
 ```
 src/app/
-├── components/     # Reusable UI (cross-page)
-├── helpers/        # Pure functions, no Angular deps
-├── models/         # Interfaces only
-├── pages/          # Feature pages and their local children
-├── services/       # HTTP and external integrations
-└── store/          # NgRx feature folders
+├── components/     # reusable UI
+├── pages/          # route-level / screen containers
+├── services/       # HTTP and infra
+├── store/          # NgRx feature folders
+├── models/         # API TypeScript interfaces
+└── helpers/        # pure functions
 ```
 
-## Code Style
+## Shell commands (agents)
 
-- Prettier configured (project devDependency)
-- Prefer `inject()` over constructor injection in new code
-- `protected` for template-bound class members in components
-- `readonly` on injected dependencies and signal selectors
-- Type imports: `import type { ... }` for interfaces
+Project rule: prefix terminal commands with **`rtk`** where applicable (`rtk git status`, `rtk npm test`) to reduce token noise in agent sessions.
 
-## Git & Secrets
+## Documentation
 
-- `.env` gitignored
-- Never commit API keys or credentials
-- `skills-lock.json` and local tooling files are not part of application source
+- `/docs/` is the **source of truth** for architecture and modules
+- Update relevant doc files when features, stack, or conventions change
+- Do not rescan the whole repo for routine tasks if docs are current
+
+## Cleanup backlog (non-blocking)
+
+Remove unused duplicate files under `pages/weather-dashboard/` (flat `weather-*-panel.component.*`) and `weather-resultas-table/` once confirmed no imports reference them.
