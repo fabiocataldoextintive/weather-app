@@ -173,11 +173,13 @@ Invoke the unit tests writer specialist (`Pedro`) and wait for completion before
 - Verify coverage: aim for 100%
 
 ### Step 5: Commit & Push
+You must do these GIT commands:
 ```bash
 git add .
 git commit -m "<prefix>: #<issue-id> - <summary>"
 git push origin <branch-name>
 ```
+- Docs update commit messages must be separated from code files (e.g. components, state management, etc.). E.g. for docs update commit message: `rtk git commit -m "feature: #INT-8 - Docs update, recent cities architecture logic modified"`.  E.g. for code files commit message: `rtk git commit -m "feature: #INT-8 - weather cities history implemented"`.
 
 ### Step 6: Pull Request
 Create a PR targeting:
