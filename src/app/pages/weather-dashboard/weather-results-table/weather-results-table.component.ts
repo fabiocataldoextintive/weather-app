@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { weatherActions } from '../../../store/weather/weather.actions';
+import { weatherFeature } from '../../../store/weather/weather.reducer';
+import { RecentCity } from '../../../store/weather/weather.state';
 
-import { weatherActions } from '../../store/weather/weather.actions';
-import { weatherFeature } from '../../store/weather/weather.reducer';
-import type { RecentCity } from '../../store/weather/weather.state';
 
 @Component({
   selector: 'app-weather-results-table',

@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 
-import { mockWeatherRoot } from '../../store/weather/weather-test-fixtures';
-import { initialWeatherState } from '../../store/weather/weather.state';
+import { mockWeatherRoot } from '../../../store/weather/weather-test-fixtures';
+import { initialWeatherState } from '../../../store/weather/weather.state';
 import { WeatherDetailPanelComponent } from './weather-detail-panel.component';
 
 describe('WeatherDetailPanelComponent', () => {

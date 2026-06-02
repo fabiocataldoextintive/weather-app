@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import { CurrentWeatherCardComponent } from '../../components/current-weather-card/current-weather-card.component';
-import { weatherFeature } from '../../store/weather/weather.reducer';
+import { CurrentWeatherCardComponent } from '../../../components/current-weather-card/current-weather-card.component';
+import { weatherFeature } from '../../../store/weather/weather.reducer';
 
 @Component({
   selector: 'app-weather-detail-panel',
