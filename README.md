@@ -1,26 +1,20 @@
 # WeatherApp
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.7.
+Angular 21 SPA for city weather search via [WeatherAPI](https://www.weatherapi.com/docs/). NgRx state, autocomplete, table/detail views, recent cities and favorites in `localStorage`.
+
+Full project docs: [`docs/`](docs/) (`project-overview.md`, `architecture.md`, `modules.md`, `conventions.md`).
 
 ## Environment (WeatherAPI key)
 
-**Base URL** (non-secret) is `http://api.weatherapi.com/v1` in `src/environments/environment*.ts`. HTTP code should build request URLs with **`weatherApiUrl()`** from `src/app/core/weather/weather-api-url.ts` (e.g. `weatherApiUrl('current.json')`, `weatherApiUrl('search.json')`) so every call uses the same configured host.
+**Base URL** (non-secret): `http://api.weatherapi.com/v1` in `src/environments/environment*.ts`. `WeatherService` builds URLs from `environment.baseUrl`.
 
-**`process.env.WEATHER_API_KEY`** is read only in code that needs the key (e.g. `getWeatherApiKey()`, `assertWeatherApiKeyConfigured()` before a WeatherAPI call). In the browser bundle it is **replaced at build time** via esbuild `define` in `angular.json`; it is not a live Node `process` at runtime.
+**API key** is injected at build time by [`@ngx-env/builder`](https://github.com/chihab/ngx-env) as `import.meta.env.NG_APP_WEATHER_API_KEY` (see `src/env.d.ts`, used in `src/app/services/weather/weather.service.ts`).
 
-Default `npm start` / `npm run build` use an **empty** key unless you pass a define to the CLI. Examples:
+1. Copy `.env.example` → `.env`
+2. Set `NG_APP_WEATHER_API_KEY=<your-key>`
+3. Start the dev server (see below)
 
-```bash
-# PowerShell (example key — use your own)
-ng serve --define process.env.WEATHER_API_KEY="'your-key-here'"
-```
-
-```bash
-# macOS / Linux
-ng serve --define process.env.WEATHER_API_KEY=\"$WEATHER_API_KEY\"
-```
-
-You can keep a local **`.env`** for your own tooling (see `.env.example`); this project does **not** load it automatically. `.env` stays gitignored — do not commit real keys.
+`.env` is gitignored — do not commit real keys.
 
 ## Development server
 
@@ -28,34 +22,38 @@ You can keep a local **`.env`** for your own tooling (see `.env.example`); this 
 npm start
 ```
 
-Open `http://localhost:4200/`. The app reloads when you change source files.
+Open `http://localhost:4200/`. Spanish locale: `npm run start:es`.
+
+## Building
+
+```bash
+npm run build:dev
+```
+
+Production build: `ng build` (default configuration in `angular.json`). Output under `dist/`.
+
+## Running unit tests
+
+```bash
+npm run test        # watch
+npm run test:run    # single run
+npm run test:coverage
+```
+
+Vitest + jsdom; config in `vitest.config.ts`.
+
+## i18n
+
+Extract messages: `npm run i18n:extract` → `src/locale/messages.xlf`.
 
 ## Code scaffolding
 
 ```bash
 ng generate component component-name
-```
-
-```bash
 ng generate --help
 ```
 
-## Building
+## Additional resources
 
-```bash
-npm run build
-```
-
-Output is under `dist/`.
-
-## Running unit tests
-
-```bash
-ng test
-```
-
-The `test` build configuration defines a placeholder `process.env.WEATHER_API_KEY` (no extra flags needed).
-
-## Additional Resources
-
-[Angular CLI Overview and Command Reference](https://angular.dev/tools/cli)
+- [Angular CLI](https://angular.dev/tools/cli)
+- [WeatherAPI docs](https://www.weatherapi.com/docs/)
