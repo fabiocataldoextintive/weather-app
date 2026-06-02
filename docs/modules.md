@@ -21,9 +21,10 @@
 
 **Child — results table** (`weather-results-table/`)
 
-- Lists `selectRecentCitiesOrdered`
-- Row click → `recentRowSelected` (rehydrates weather from cache)
+- Lists `selectRecentCitiesOrdered` with client-side pagination (`RECENT_CITIES_PAGE_SIZE = 25`)
+- Row click → `recentRowSelected` → effect re-fetches current weather via API
 - Shows count via `selectRecentCitiesCount`
+- Prev/Next controls when history exceeds one page
 
 **Child — detail panel** (`weather-detail-panel/`)
 
@@ -56,7 +57,7 @@
 
 | File | Role |
 |------|------|
-| `weather.state.ts` | State interface, `initialWeatherState`, `MIN_SEARCH_QUERY_LEN`, `favoriteCityKey`, `recentCitiesOrdered` |
+| `weather.state.ts` | State interface, `initialWeatherState`, `MIN_SEARCH_QUERY_LEN`, `RECENT_CITIES_PAGE_SIZE`, `favoriteCityKey`, `recentCitiesOrdered` |
 | `weather.actions.ts` | `createActionGroup` — search, load, favorites, hydration |
 | `weather.reducer.ts` | Pure transitions + `weatherFeature` |
 | `weather.effects.ts` | Side effects: API, debounce, persistence |
