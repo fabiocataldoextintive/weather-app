@@ -18,6 +18,14 @@
 - Keyboard: `Escape` dismisses suggestions; `Enter` picks first suggestion
 - View toggle: table vs detailed (`visualizationModeChanged`)
 - Loading and error banners driven by `currentStatus` / `currentError`
+- Embeds **`WeatherFavoritesListComponent`** (always visible below search)
+
+**Child — favorites list** (`weather-favorites-list/`)
+
+- Lists `selectFavoritesCitiesOrdered` (alphabetical by normalized label)
+- Row click → `favoriteSelected` → effect re-fetches current weather via API → switches to detail view
+- Remove (×) → `favoriteCityToggled` → removed from store and `localStorage`
+- Empty state when no favorites; active row highlighted when `activeLocationLabel` matches
 
 **Child — results table** (`weather-results-table/`)
 
@@ -69,7 +77,7 @@
 
 - **Search:** `searchInputChanged`, `suggestionsResolved`, `dismissSuggestions`, `suggestionPicked`, `searchValidationFailed`, `clearSearchValidation`
 - **Weather load:** `loadCurrentWeather`, `loadCurrentWeatherSuccess`, `loadCurrentWeatherFailure`
-- **UX:** `recentRowSelected`, `visualizationModeChanged`, `favoriteCityToggled`
+- **UX:** `recentRowSelected`, `favoriteSelected`, `visualizationModeChanged`, `favoriteCityToggled`
 - **Init:** `hydrateFromLocalStorage`
 
 ## Helpers

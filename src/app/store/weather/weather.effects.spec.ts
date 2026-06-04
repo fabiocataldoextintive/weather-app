@@ -130,6 +130,32 @@ describe('WeatherEffects', () => {
     expect(emitted).toBe(false);
   });
 
+  it('favoriteSelectedLoadsWeather emits loadCurrentWeather for known favorite', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    const fk = 'paris fr';
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        favoritesCities: { [fk]: { cityLabel: fk } },
+      },
+    });
+    const emitted = firstValueFrom(effects.favoriteSelectedLoadsWeather$);
+    actions$.next(weatherActions.favoriteSelected({ cityLabel: fk }));
+    const action = await emitted;
+    expect(action).toEqual(weatherActions.loadCurrentWeather({ q: fk, label: fk }));
+  });
+
+  it('favoriteSelectedLoadsWeather ignores unknown favorite', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    let emitted = false;
+    effects.favoriteSelectedLoadsWeather$.subscribe(() => {
+      emitted = true;
+    });
+    actions$.next(weatherActions.favoriteSelected({ cityLabel: 'missing' }));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(emitted).toBe(false);
+  });
+
   it('loadCurrentWeather fails fast when q invalid after sanitize', async () => {
     TestBed.inject(WeatherEffects);
     actions$.next(weatherActions.loadCurrentWeather({ q: '..', label: 'x' }));

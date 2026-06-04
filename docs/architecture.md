@@ -50,11 +50,12 @@
 - `autocomplete$` — debounce 300ms on `searchInputChanged`; calls `searchLocations` when query ≥ 2 letters/digits
 - `pickSuggestionLoadsWeather$` — maps `suggestionPicked` → `loadCurrentWeather`
 - `recentRowSelectedLoadsWeather$` — maps `recentRowSelected` → `loadCurrentWeather` (fresh API call for history re-run)
+- `favoriteSelectedLoadsWeather$` — maps `favoriteSelected` → `loadCurrentWeather` (city name query)
 - `loadCurrentWeather$` — sanitizes query, calls `getCurrent`, maps errors via `toWeatherUserMessage`
 - `persistRecentAndFavorites$` — writes storage after successful load or favorite toggle (no dispatch)
 - `persistVisualization$` — writes visualization mode on change (no dispatch)
 
-**Selectors:** `createFeature` defaults plus `selectRecentCitiesOrdered`, `selectRecentCitiesCount`.
+**Selectors:** `createFeature` defaults plus `selectRecentCitiesOrdered`, `selectRecentCitiesCount`, `selectFavoritesCitiesOrdered`, `selectFavoritesCitiesCount`.
 
 ## Data flow (happy path)
 
@@ -62,7 +63,8 @@
 2. User picks suggestion (click or Enter on first) → `suggestionPicked` → `loadCurrentWeather` with `q = "lat,lon"` and display `label`.
 3. Success → `loadCurrentWeatherSuccess` → updates `currentWeather`, upserts `recentCities`, sets `selectedKey` → effect persists to `localStorage`.
 4. Table mode: user selects row → `recentRowSelected` → effect dispatches `loadCurrentWeather` → fresh weather fetch → switches to detail view on success.
-5. Detail mode: `CurrentWeatherCardComponent` can toggle favorite → `favoriteCityToggled` → persisted favorites map.
+5. Favorites: user toggles star on detail card → `favoriteCityToggled` → persisted favorites map; favorites list shows all entries; remove via list or star; click favorite row → `favoriteSelected` → fresh weather fetch.
+6. Detail mode: `CurrentWeatherCardComponent` can toggle favorite → `favoriteCityToggled` → persisted favorites map.
 
 ## Persistence (`weather.storage.ts`)
 

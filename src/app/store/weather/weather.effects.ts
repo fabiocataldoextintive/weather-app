@@ -13,7 +13,7 @@ import {
   writeRecentCitiesToStorage,
   writeVisualizationMode,
 } from './weather.storage';
-import { MIN_SEARCH_QUERY_LEN } from './weather.state';
+import { MIN_SEARCH_QUERY_LEN, favoriteCityKey } from './weather.state';
 
 @Injectable()
 export class WeatherEffects {
@@ -54,6 +54,15 @@ export class WeatherEffects {
         const row = recentCities[key];
         return weatherActions.loadCurrentWeather({ q: key, label: row.label });
       }),
+    ),
+  );
+
+  readonly favoriteSelectedLoadsWeather$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(weatherActions.favoriteSelected),
+      withLatestFrom(this.store.select(weatherFeature.selectFavoritesCities)),
+      filter(([{ cityLabel }, favoritesCities]) => Boolean(favoritesCities[favoriteCityKey(cityLabel)])),
+      map(([{ cityLabel }]) => weatherActions.loadCurrentWeather({ q: cityLabel, label: cityLabel })),
     ),
   );
 

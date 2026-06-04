@@ -1,0 +1,33 @@
+<section class="favorites" i18n-aria-label="@@favorites.section" aria-label="Favorite cities">
+  <h2 class="favorites__title" i18n="@@favorites.title">Favorites</h2>
+
+  @if (favoritesCount() > 0) {
+    <ul class="favorites__list">
+      @for (favorite of favoritesOrdered(); track favorite.cityLabel) {
+        <li class="favorites__item" [class.favorites__item--active]="isActive(favorite)">
+          <button
+            type="button"
+            class="favorites__select"
+            (click)="selectFavorite(favorite)"
+            i18n-aria-label="@@favorites.loadCity"
+            [attr.aria-label]="'Load weather for ' + favorite.cityLabel"
+          >
+            <span class="favorites__star" aria-hidden="true">★</span>
+            <span class="favorites__label">{{ favorite.cityLabel }}</span>
+          </button>
+          <button
+            type="button"
+            class="favorites__remove"
+            (click)="removeFavorite(favorite, $event)"
+            i18n-aria-label="@@favorites.remove"
+            [attr.aria-label]="'Remove ' + favorite.cityLabel + ' from favorites'"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="favorites__empty" i18n="@@favorites.emptyHint">No favorites yet. Open a city in detail view and tap the star.</p>
+  }
+</section>

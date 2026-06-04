@@ -63,3 +63,7 @@ export function favoriteCityKey(cityLabel: string): string {
 export function recentCitiesOrdered(map: RecentCitiesMap): RecentCity[] {
   return Object.values(map).sort((a, b) => b.updatedAt - a.updatedAt);
 }
+
+export function favoritesCitiesOrdered(map: FavoriteCitiesMap): FavoriteCity[] {
+  return Object.values(map).sort((a, b) => a.cityLabel.localeCompare(b.cityLabel));
+}
