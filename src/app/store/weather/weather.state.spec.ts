@@ -1,8 +1,10 @@
 import { mockWeatherRoot } from './weather-test-fixtures';
 import {
   favoriteCityKey,
+  favoritesCitiesOrdered,
   initialWeatherState,
   recentCitiesOrdered,
+  type FavoriteCitiesMap,
   type RecentCity,
   type RecentCitiesMap,
 } from './weather.state';
@@ -34,6 +36,16 @@ describe('weather.state helpers', () => {
       };
       const map: RecentCitiesMap = { a, b };
       expect(recentCitiesOrdered(map).map((r) => r.key)).toEqual(['b', 'a']);
+    });
+  });
+
+  describe('favoritesCitiesOrdered', () => {
+    it('sorts alphabetically by cityLabel', () => {
+      const map: FavoriteCitiesMap = {
+        z: { cityLabel: 'zurich' },
+        a: { cityLabel: 'amsterdam' },
+      };
+      expect(favoritesCitiesOrdered(map).map((f) => f.cityLabel)).toEqual(['amsterdam', 'zurich']);
     });
   });
 

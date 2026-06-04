@@ -23,6 +23,7 @@ export const weatherActions = createActionGroup({
     recentRowSelected: props<{ key: string }>(),
     visualizationModeChanged: props<{ mode: VisualizationMode }>(),
     favoriteCityToggled: props<{ cityLabel: string }>(),
+    favoriteSelected: props<{ cityLabel: string }>(),
 
     hydrateFromLocalStorage: props<{
       recentCities: RecentCitiesMap;

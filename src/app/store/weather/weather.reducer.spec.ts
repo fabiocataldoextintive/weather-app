@@ -119,6 +119,26 @@ describe('weather reducer', () => {
     expect(next.favoritesCities).toEqual({});
   });
 
+  it('favoriteSelected switches to detailed when favorite exists', () => {
+    const label = 'Paris';
+    const fk = favoriteCityKey(label);
+    const state = {
+      ...initialWeatherState,
+      visualizationMode: 'table' as const,
+      favoritesCities: { [fk]: { cityLabel: fk } },
+    };
+    const next = reduce(state, weatherActions.favoriteSelected({ cityLabel: label }));
+    expect(next.visualizationMode).toBe('detailed');
+  });
+
+  it('favoriteSelected noop when favorite missing', () => {
+    const next = reduce(
+      initialWeatherState,
+      weatherActions.favoriteSelected({ cityLabel: 'Unknown' }),
+    );
+    expect(next).toBe(initialWeatherState);
+  });
+
   it('hydrateFromLocalStorage merges persisted slices', () => {
     const recent = {} as typeof initialWeatherState.recentCities;
     const favorites = {} as typeof initialWeatherState.favoritesCities;

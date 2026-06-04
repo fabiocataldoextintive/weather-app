@@ -49,8 +49,9 @@ describe('weatherActions', () => {
     expect(weatherActions.visualizationModeChanged({ mode: 'table' }).mode).toBe('table');
   });
 
-  it('creates favoriteCityToggled and hydrateFromLocalStorage', () => {
+  it('creates favoriteCityToggled, favoriteSelected and hydrateFromLocalStorage', () => {
     expect(weatherActions.favoriteCityToggled({ cityLabel: 'x' }).cityLabel).toBe('x');
+    expect(weatherActions.favoriteSelected({ cityLabel: 'x' }).cityLabel).toBe('x');
     const h = weatherActions.hydrateFromLocalStorage({
       recentCities: {},
       favoritesCities: {},

@@ -5,6 +5,7 @@ import type { Root } from '../../models/root.interface';
 import { weatherActions } from './weather.actions';
 import {
   favoriteCityKey,
+  favoritesCitiesOrdered,
   initialWeatherState,
   type RecentCitiesMap,
   type WeatherState,
@@ -79,6 +80,14 @@ const weatherReducer = createReducer(
       visualizationMode: 'detailed',
     };
   }),
+  on(weatherActions.favoriteSelected, (state, { cityLabel }) => {
+    const fk = favoriteCityKey(cityLabel);
+    if (!state.favoritesCities[fk]) return state;
+    return {
+      ...state,
+      visualizationMode: 'detailed',
+    };
+  }),
   on(weatherActions.visualizationModeChanged, (state, { mode }) => ({
     ...state,
     visualizationMode: mode,
@@ -105,11 +114,18 @@ const weatherReducer = createReducer(
 export const weatherFeature = createFeature({
   name: 'weather',
   reducer: weatherReducer,
-  extraSelectors: ({ selectRecentCities }) => {
+  extraSelectors: ({ selectRecentCities, selectFavoritesCities }) => {
     const selectRecentCitiesOrdered = createSelector(selectRecentCities, (m) =>
       Object.values(m).sort((a, b) => b.updatedAt - a.updatedAt),
     );
     const selectRecentCitiesCount = createSelector(selectRecentCities, (m) => Object.keys(m).length);
-    return { selectRecentCitiesOrdered, selectRecentCitiesCount };
+    const selectFavoritesCitiesOrdered = createSelector(selectFavoritesCities, favoritesCitiesOrdered);
+    const selectFavoritesCitiesCount = createSelector(selectFavoritesCities, (m) => Object.keys(m).length);
+    return {
+      selectRecentCitiesOrdered,
+      selectRecentCitiesCount,
+      selectFavoritesCitiesOrdered,
+      selectFavoritesCitiesCount,
+    };
   },
 });

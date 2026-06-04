@@ -8,11 +8,12 @@ import type { SearchLocation } from '../../models/search-location.interface';
 import { weatherActions } from '../../store/weather/weather.actions';
 import { weatherFeature } from '../../store/weather/weather.reducer';
 import { WeatherDetailPanelComponent } from './weather-detail-panel/weather-detail-panel.component';
+import { WeatherFavoritesListComponent } from './weather-favorites-list/weather-favorites-list.component';
 import { WeatherResultsTableComponent } from './weather-results-table/weather-results-table.component';
 
 @Component({
   selector: 'app-weather-dashboard',
-  imports: [CommonModule, FormsModule, WeatherResultsTableComponent, WeatherDetailPanelComponent],
+  imports: [CommonModule, FormsModule, WeatherResultsTableComponent, WeatherDetailPanelComponent, WeatherFavoritesListComponent],
   templateUrl: './weather-dashboard.component.html',
   styleUrl: './weather-dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
