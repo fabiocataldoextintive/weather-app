@@ -143,7 +143,7 @@ Enforce this branch structure across the team:
 
 5. **Report:**
    Once verification is complete, report to the user:
-   - All components, services, styles, and state management implementations involved, and a summary of the details of each artifact.
+   - All components, services, styles, and state management implementations involved, and a summary of 30 characters the details of each artifact.
    - the full cost report of the implementation:
 
       - when estimate token usage, use the following method:
