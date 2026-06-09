@@ -148,9 +148,39 @@ describe('weather reducer', () => {
         recentCities: recent,
         favoritesCities: favorites,
         visualizationMode: 'table',
+        locale: 'es',
       }),
     );
     expect(next.visualizationMode).toBe('table');
+    expect(next.locale).toBe('es');
     expect(next.recentCities).toBe(recent);
+  });
+
+  it('localeChanged updates locale and clears stale messages', () => {
+    const base = {
+      ...initialWeatherState,
+      locale: 'en' as const,
+      searchValidationMessage: 'bad',
+      currentError: 'oops',
+    };
+    const next = reduce(base, weatherActions.localeChanged({ locale: 'es' }));
+    expect(next.locale).toBe('es');
+    expect(next.searchValidationMessage).toBeNull();
+    expect(next.currentError).toBeNull();
+  });
+
+  it('recentCitiesRootsUpdated refreshes stored weather rows', () => {
+    const root = mockWeatherRoot();
+    const updated = { ...root, current: { ...root.current, condition: { ...root.current.condition, text: 'Nublado' } } };
+    const base = reduce(
+      initialWeatherState,
+      weatherActions.loadCurrentWeatherSuccess({ q: '40,-74', label: 'NYC', root }),
+    );
+    const next = reduce(
+      base,
+      weatherActions.recentCitiesRootsUpdated({ updates: [{ key: '40,-74', root: updated }] }),
+    );
+    expect(next.recentCities['40,-74']?.root.current.condition.text).toBe('Nublado');
+    expect(next.currentWeather?.current.condition.text).toBe('Nublado');
   });
 });

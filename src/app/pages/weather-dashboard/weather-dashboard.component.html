@@ -1,11 +1,37 @@
 <div class="dashboard">
   <header class="dashboard__header">
-    <h1 class="dashboard__title" i18n="@@dashboard.title">Weather</h1>
-    <p class="dashboard__hint" i18n="@@dashboard.hint">Search for a city and pick a suggestion, or press Enter.</p>
+    <div class="dashboard__top-bar">
+      <div
+        class="lang-selector"
+        role="group"
+        [attr.aria-label]="'dashboard.langToggle' | i18n"
+      >
+        <button
+          type="button"
+          class="lang-selector__btn"
+          [class.lang-selector__btn--active]="locale() === 'en'"
+          [attr.aria-pressed]="locale() === 'en'"
+          (click)="setLocale('en')"
+        >
+          {{ 'dashboard.langEn' | i18n }}
+        </button>
+        <button
+          type="button"
+          class="lang-selector__btn"
+          [class.lang-selector__btn--active]="locale() === 'es'"
+          [attr.aria-pressed]="locale() === 'es'"
+          (click)="setLocale('es')"
+        >
+          {{ 'dashboard.langEs' | i18n }}
+        </button>
+      </div>
+    </div>
+    <h1 class="dashboard__title">{{ 'dashboard.title' | i18n }}</h1>
+    <p class="dashboard__hint">{{ 'dashboard.hint' | i18n }}</p>
   </header>
 
-  <section class="search" i18n-aria-label="@@dashboard.searchSection" aria-label="City search">
-    <label class="search__label" for="city-search" i18n="@@dashboard.cityLabel">City</label>
+  <section class="search" [attr.aria-label]="'dashboard.searchSection' | i18n">
+    <label class="search__label" for="city-search">{{ 'dashboard.cityLabel' | i18n }}</label>
     <div class="search__row">
       <input
         id="city-search"
@@ -38,29 +64,27 @@
 
   <app-weather-favorites-list />
 
-  <div class="view-toggle" role="group" i18n-aria-label="@@dashboard.viewToggle" aria-label="Results layout">
+  <div class="view-toggle" role="group" [attr.aria-label]="'dashboard.viewToggle' | i18n">
     <button
       type="button"
       class="view-toggle__btn"
       [class.view-toggle__btn--active]="visualizationMode() === 'table'"
       (click)="setView('table')"
-      i18n="@@dashboard.viewTable"
     >
-      Table
+      {{ 'dashboard.viewTable' | i18n }}
     </button>
     <button
       type="button"
       class="view-toggle__btn"
       [class.view-toggle__btn--active]="visualizationMode() === 'detailed'"
       (click)="setView('detailed')"
-      i18n="@@dashboard.viewDetail"
     >
-      Detail
+      {{ 'dashboard.viewDetail' | i18n }}
     </button>
   </div>
 
   @if (loadingWeather()) {
-    <p class="status status--loading" aria-live="polite" i18n="@@dashboard.loading">Loading weather…</p>
+    <p class="status status--loading" aria-live="polite">{{ 'dashboard.loading' | i18n }}</p>
   }
 
   @if (weatherError()) {

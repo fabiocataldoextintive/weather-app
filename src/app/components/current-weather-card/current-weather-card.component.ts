@@ -3,13 +3,14 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { Store } from '@ngrx/store';
 
 import { Root } from '../../models/root.interface';
+import { I18nPipe } from '../../i18n/i18n.pipe';
 import { weatherActions } from '../../store/weather/weather.actions';
 import { weatherFeature } from '../../store/weather/weather.reducer';
 import { favoriteCityKey } from '../../store/weather/weather.state';
 
 @Component({
   selector: 'app-current-weather-card',
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, I18nPipe],
   templateUrl: './current-weather-card.component.html',
   styleUrl: './current-weather-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

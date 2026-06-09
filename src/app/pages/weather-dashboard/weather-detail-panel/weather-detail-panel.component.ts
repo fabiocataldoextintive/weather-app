@@ -3,12 +3,13 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { CurrentWeatherCardComponent } from '../../../components/current-weather-card/current-weather-card.component';
+import { I18nPipe } from '../../../i18n/i18n.pipe';
 import { weatherFeature } from '../../../store/weather/weather.reducer';
 
 @Component({
   selector: 'app-weather-detail-panel',
   standalone: true,
-  imports: [CommonModule, CurrentWeatherCardComponent],
+  imports: [CommonModule, CurrentWeatherCardComponent, I18nPipe],
   templateUrl: './weather-detail-panel.component.html',
   styleUrl: './weather-detail-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,3 +1,6 @@
+import type { AppLocale } from '../../i18n/app-locale';
+import { normalizeAppLocale } from '../../i18n/app-locale';
+import { APP_LOCALE_STORAGE_KEY } from '../../i18n/app-locale';
 import type { Root } from '../../models/root.interface';
 import { cleanText } from '../../helpers/clean-text';
 import type {
@@ -12,6 +15,7 @@ import { favoriteCityKey } from './weather.state';
 const LS_RECENT = 'recent-cities';
 const LS_FAVORITES = 'favorite-cities';
 const LS_VIZ = 'visualization-mode';
+const LS_LOCALE = APP_LOCALE_STORAGE_KEY;
 
 function locationQueryKey(root: Root): string {
   const { lat, lon } = root.location;
@@ -179,4 +183,14 @@ export function readFavoritesFromStorage(): FavoriteCitiesMap {
 export function writeFavoritesToStorage(map: FavoriteCitiesMap): void {
   if (typeof localStorage === 'undefined') return;
   localStorage.setItem(LS_FAVORITES, serializeFavorites(map));
+}
+
+export function readLocaleFromStorage(): AppLocale {
+  if (typeof localStorage === 'undefined') return 'en';
+  return normalizeAppLocale(localStorage.getItem(LS_LOCALE));
+}
+
+export function writeLocaleToStorage(locale: AppLocale): void {
+  if (typeof localStorage === 'undefined') return;
+  localStorage.setItem(LS_LOCALE, locale);
 }

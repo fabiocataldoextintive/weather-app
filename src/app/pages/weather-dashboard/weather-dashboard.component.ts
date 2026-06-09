@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
 import { cleanText } from '../../helpers/clean-text';
+import type { AppLocale } from '../../i18n/app-locale';
+import { I18nPipe } from '../../i18n/i18n.pipe';
 import type { SearchLocation } from '../../models/search-location.interface';
 import { weatherActions } from '../../store/weather/weather.actions';
 import { weatherFeature } from '../../store/weather/weather.reducer';
@@ -13,7 +15,7 @@ import { WeatherResultsTableComponent } from './weather-results-table/weather-re
 
 @Component({
   selector: 'app-weather-dashboard',
-  imports: [CommonModule, FormsModule, WeatherResultsTableComponent, WeatherDetailPanelComponent, WeatherFavoritesListComponent],
+  imports: [CommonModule, FormsModule, I18nPipe, WeatherResultsTableComponent, WeatherDetailPanelComponent, WeatherFavoritesListComponent],
   templateUrl: './weather-dashboard.component.html',
   styleUrl: './weather-dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +31,7 @@ export class WeatherDashboardComponent {
   protected readonly currentStatus = this.store.selectSignal(weatherFeature.selectCurrentStatus);
   protected readonly weatherError = this.store.selectSignal(weatherFeature.selectCurrentError);
   protected readonly visualizationMode = this.store.selectSignal(weatherFeature.selectVisualizationMode);
+  protected readonly locale = this.store.selectSignal(weatherFeature.selectLocale);
 
   protected loadingWeather(): boolean {
     return this.currentStatus() === 'loading';
@@ -59,5 +62,10 @@ export class WeatherDashboardComponent {
 
   protected setView(mode: 'table' | 'detailed'): void {
     this.store.dispatch(weatherActions.visualizationModeChanged({ mode }));
+  }
+
+  protected setLocale(locale: AppLocale): void {
+    if (this.locale() === locale) return;
+    this.store.dispatch(weatherActions.localeChanged({ locale }));
   }
 }

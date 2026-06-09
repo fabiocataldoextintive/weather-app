@@ -1,3 +1,4 @@
+import type { AppLocale } from '../../i18n/app-locale';
 import type { Root } from '../../models/root.interface';
 import type { SearchLocation } from '../../models/search-location.interface';
 import { cleanText } from '../../helpers/clean-text';
@@ -36,6 +37,7 @@ export interface WeatherState {
   recentCities: RecentCitiesMap;
   favoritesCities: FavoriteCitiesMap;
   visualizationMode: VisualizationMode;
+  locale: AppLocale;
 }
 
 export const initialWeatherState: WeatherState = {
@@ -53,6 +55,7 @@ export const initialWeatherState: WeatherState = {
   recentCities: {},
   favoritesCities: {},
   visualizationMode: 'detailed',
+  locale: 'en',
 };
 
 /** Normalized key for favorites map (lowercase, no accents, safe chars). */

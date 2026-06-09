@@ -1,13 +1,13 @@
-export function toWeatherUserMessage(err: Error): string {
+import type { AppLocale } from '../../i18n/app-locale';
+import { translate } from '../../i18n/translate';
+
+export function toWeatherUserMessage(err: Error, locale: AppLocale = 'en'): string {
   const raw = err.message ?? '';
   if (/location/i.test(raw) || /no matching/i.test(raw)) {
-    return $localize`:@@err.locationNotFound:That location could not be found. Try another city.`;
+    return translate('err.locationNotFound', locale);
   }
   if (/Weather API request failed/i.test(raw)) {
-    return raw.replace(
-      /^Weather API request failed:\s*/i,
-      $localize`:@@err.apiLoadPrefix:Weather could not be loaded: `,
-    );
+    return raw.replace(/^Weather API request failed:\s*/i, translate('err.apiLoadPrefix', locale));
   }
-  return $localize`:@@err.generic:Something went wrong. Check your connection and try again.`;
+  return translate('err.generic', locale);
 }

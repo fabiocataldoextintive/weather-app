@@ -103,11 +103,33 @@ const weatherReducer = createReducer(
     }
     return { ...state, favoritesCities: next };
   }),
-  on(weatherActions.hydrateFromLocalStorage, (state, { recentCities, favoritesCities, visualizationMode }) => ({
+  on(weatherActions.localeChanged, (state, { locale }) => ({
+    ...state,
+    locale,
+    searchValidationMessage: null,
+    currentError: null,
+  })),
+  on(weatherActions.recentCitiesRootsUpdated, (state, { updates }) => {
+    if (updates.length === 0) return state;
+    let recentCities = state.recentCities;
+    for (const { key, root } of updates) {
+      const row = recentCities[key];
+      if (!row) continue;
+      recentCities = { ...recentCities, [key]: { ...row, root } };
+    }
+    const selected = state.selectedKey ? recentCities[state.selectedKey] : undefined;
+    return {
+      ...state,
+      recentCities,
+      currentWeather: selected?.root ?? state.currentWeather,
+    };
+  }),
+  on(weatherActions.hydrateFromLocalStorage, (state, { recentCities, favoritesCities, visualizationMode, locale }) => ({
     ...state,
     recentCities,
     favoritesCities,
     visualizationMode,
+    locale,
   })),
 );
 

@@ -9,14 +9,13 @@
           [attr.aria-pressed]="isFavorite()"
           [class.card__fav--on]="isFavorite()"
           (click)="toggleFavorite()"
-          i18n-aria-label="@@card.favoriteToggle"
-          aria-label="Toggle favorite"
+          [attr.aria-label]="'card.favoriteToggle' | i18n"
         >
           {{ isFavorite() ? '★' : '☆' }}
         </button>
       }
     </div>
-    <p class="card__time" i18n="@@card.localTime">Local time: {{ root().location.localtime }}</p>
+    <p class="card__time">{{ 'card.localTime' | i18n: { time: root().location.localtime } }}</p>
   </header>
 
   <div class="card__main">
@@ -26,8 +25,7 @@
         [src]="iconSrc()"
         width="128"
         height="128"
-        i18n-alt="@@card.weatherIconAlt"
-        alt="Weather condition icon"
+        [attr.alt]="'card.weatherIconAlt' | i18n"
       />
     }
     <div class="card__temps">
@@ -39,11 +37,11 @@
 
   <dl class="card__details">
     <div class="card__detail">
-      <dt i18n="@@card.wind">Wind</dt>
+      <dt>{{ 'card.wind' | i18n }}</dt>
       <dd>{{ root().current.wind_kph | number: '1.0-0' }} km/h {{ root().current.wind_dir }}</dd>
     </div>
     <div class="card__detail">
-      <dt i18n="@@card.humidity">Humidity</dt>
+      <dt>{{ 'card.humidity' | i18n }}</dt>
       <dd>{{ root().current.humidity }}%</dd>
     </div>
   </dl>

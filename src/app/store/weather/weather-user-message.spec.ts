@@ -20,6 +20,9 @@ describe('toWeatherUserMessage', () => {
     expect(toWeatherUserMessage(new Error('something else'))).toBe(
       'Something went wrong. Check your connection and try again.',
     );
+    expect(toWeatherUserMessage(new Error('something else'), 'es')).toBe(
+      'Algo salió mal. Comprueba la conexión e inténtalo de nuevo.',
+    );
   });
 
   it('handles empty message', () => {

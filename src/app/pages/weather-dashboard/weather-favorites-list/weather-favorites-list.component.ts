@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 
+import { I18nPipe } from '../../../i18n/i18n.pipe';
 import { weatherActions } from '../../../store/weather/weather.actions';
 import { weatherFeature } from '../../../store/weather/weather.reducer';
 import { favoriteCityKey, type FavoriteCity } from '../../../store/weather/weather.state';
@@ -9,7 +10,7 @@ import { favoriteCityKey, type FavoriteCity } from '../../../store/weather/weath
 @Component({
   selector: 'app-weather-favorites-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, I18nPipe],
   templateUrl: './weather-favorites-list.component.html',
   styleUrl: './weather-favorites-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

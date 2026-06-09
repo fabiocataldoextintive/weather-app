@@ -149,4 +149,29 @@ describe('WeatherDashboardComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('.status--error')?.textContent).toContain('Network error');
   });
+
+  it('should render language selector buttons', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.lang-selector')).toBeTruthy();
+    expect(el.textContent).toContain('English');
+    expect(el.textContent).toContain('Spanish');
+  });
+
+  it('should dispatch localeChanged when selecting another language', () => {
+    dispatchSpy.mockClear();
+    const cmp = fixture.componentInstance as unknown as {
+      setLocale(locale: 'en' | 'es'): void;
+    };
+    cmp.setLocale('es');
+    expect(dispatchSpy).toHaveBeenCalledWith(weatherActions.localeChanged({ locale: 'es' }));
+  });
+
+  it('should not dispatch localeChanged when language is unchanged', () => {
+    dispatchSpy.mockClear();
+    const cmp = fixture.componentInstance as unknown as {
+      setLocale(locale: 'en' | 'es'): void;
+    };
+    cmp.setLocale('en');
+    expect(dispatchSpy).not.toHaveBeenCalled();
+  });
 });
