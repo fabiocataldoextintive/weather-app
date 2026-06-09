@@ -3,10 +3,10 @@
     <table class="results-table">
       <thead>
         <tr>
-          <th scope="col" i18n="@@table.colCity">City</th>
-          <th scope="col" i18n="@@table.colTempC">Temp (°C)</th>
-          <th scope="col" i18n="@@table.colCondition">Condition</th>
-          <th scope="col" i18n="@@table.colLocalTime">Local time</th>
+          <th scope="col">{{ 'table.colCity' | i18n }}</th>
+          <th scope="col">{{ 'table.colTempC' | i18n }}</th>
+          <th scope="col">{{ 'table.colCondition' | i18n }}</th>
+          <th scope="col">{{ 'table.colLocalTime' | i18n }}</th>
         </tr>
       </thead>
       <tbody>
@@ -27,34 +27,28 @@
   </div>
 
   @if (showPagination()) {
-    <nav
-      class="table-pagination"
-      i18n-aria-label="@@table.paginationNav"
-      aria-label="Search history pages"
-    >
+    <nav class="table-pagination" [attr.aria-label]="'table.paginationNav' | i18n">
       <button
         type="button"
         class="table-pagination__btn"
         [disabled]="currentPage() === 0"
         (click)="goToPreviousPage()"
-        i18n="@@table.paginationPrev"
       >
-        Previous
+        {{ 'table.paginationPrev' | i18n }}
       </button>
-      <span class="table-pagination__status" i18n="@@table.paginationStatus">
-        Page {{ currentPage() + 1 }} of {{ totalPages() }}
+      <span class="table-pagination__status">
+        {{ 'table.paginationStatus' | i18n: { current: currentPage() + 1, total: totalPages() } }}
       </span>
       <button
         type="button"
         class="table-pagination__btn"
         [disabled]="currentPage() >= totalPages() - 1"
         (click)="goToNextPage()"
-        i18n="@@table.paginationNext"
       >
-        Next
+        {{ 'table.paginationNext' | i18n }}
       </button>
     </nav>
   }
 } @else if (recentCitiesCount() === 0 && !loadingWeather()) {
-  <p class="status status--muted" i18n="@@table.emptyHint">No saved results yet. Search for a city above.</p>
+  <p class="status status--muted">{{ 'table.emptyHint' | i18n }}</p>
 }

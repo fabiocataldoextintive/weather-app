@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { I18nPipe } from '../../../i18n/i18n.pipe';
 import { weatherActions } from '../../../store/weather/weather.actions';
 import { weatherFeature } from '../../../store/weather/weather.reducer';
 import { RECENT_CITIES_PAGE_SIZE, RecentCity } from '../../../store/weather/weather.state';
@@ -9,7 +10,7 @@ import { RECENT_CITIES_PAGE_SIZE, RecentCity } from '../../../store/weather/weat
 @Component({
   selector: 'app-weather-results-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, I18nPipe],
   templateUrl: './weather-results-table.component.html',
   styleUrl: './weather-results-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

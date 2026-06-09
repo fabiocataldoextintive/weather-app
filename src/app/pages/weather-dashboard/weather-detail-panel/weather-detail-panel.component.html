@@ -1,7 +1,7 @@
-<section class="detail-panel" i18n-aria-label="@@detail.section" aria-label="Detailed weather">
+<section class="detail-panel" [attr.aria-label]="'detail.section' | i18n">
   @if (displayRoot(); as root) {
     <app-current-weather-card [root]="root" [favoriteLabel]="activeLocationLabel()" />
   } @else if (!loadingWeather() && !weatherError() && !validationMessage()) {
-    <p class="status status--muted" i18n="@@detail.emptyHint">Search for a city to see the forecast.</p>
+    <p class="status status--muted">{{ 'detail.emptyHint' | i18n }}</p>
   }
 </section>

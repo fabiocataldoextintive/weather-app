@@ -17,6 +17,7 @@
 - Autocomplete list from `suggestions` / `showSuggestions`
 - Keyboard: `Escape` dismisses suggestions; `Enter` picks first suggestion
 - View toggle: table vs detailed (`visualizationModeChanged`)
+- **Language selector** (header, top-right): English / Spanish segmented control → `localeChanged`; persists to `localStorage` key `app-locale`
 - Loading and error banners driven by `currentStatus` / `currentError`
 - Embeds **`WeatherFavoritesListComponent`** (always visible below search)
 
@@ -77,7 +78,7 @@
 
 - **Search:** `searchInputChanged`, `suggestionsResolved`, `dismissSuggestions`, `suggestionPicked`, `searchValidationFailed`, `clearSearchValidation`
 - **Weather load:** `loadCurrentWeather`, `loadCurrentWeatherSuccess`, `loadCurrentWeatherFailure`
-- **UX:** `recentRowSelected`, `favoriteSelected`, `visualizationModeChanged`, `favoriteCityToggled`
+- **UX:** `recentRowSelected`, `favoriteSelected`, `visualizationModeChanged`, `favoriteCityToggled`, `localeChanged`
 - **Init:** `hydrateFromLocalStorage`
 
 ## Helpers
@@ -97,8 +98,11 @@ Interfaces aligned with WeatherAPI JSON:
 
 ## i18n
 
-- Markers in templates (`i18n`, `i18n-aria-label`) and `$localize` in effects/reducer messages
-- Source: `src/locale/messages.xlf`; Spanish: `messages.es.xlf`
+**Runtime switching (INT-20):** UI locale lives in NgRx (`locale`) and `localStorage` (`app-locale`). Templates use `I18nPipe` (`{{ 'dashboard.title' | i18n }}`) backed by `src/app/i18n/messages.ts` (catalog aligned with XLF message ids). Store/effects use `translate()` from `src/app/i18n/translate.ts`. WeatherAPI `lang` param applied on `getCurrent` when locale is `es`.
+
+**Build-time (INT-13):** `@angular/localize` still configured in `angular.json`; compile-time Spanish via `npm run start:es`. XLF files remain source for extract/review:
+
+- Markers legacy path: `src/locale/messages.xlf`; Spanish: `messages.es.xlf`
 - Extract: `npm run i18n:extract`
 
 ## Environment

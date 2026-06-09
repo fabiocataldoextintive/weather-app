@@ -56,7 +56,17 @@ describe('weatherActions', () => {
       recentCities: {},
       favoritesCities: {},
       visualizationMode: 'detailed',
+      locale: 'es',
     });
     expect(h.visualizationMode).toBe('detailed');
+    expect(h.locale).toBe('es');
+  });
+
+  it('creates localeChanged and recentCitiesRootsUpdated', () => {
+    const root = mockWeatherRoot();
+    expect(weatherActions.localeChanged({ locale: 'es' }).locale).toBe('es');
+    expect(
+      weatherActions.recentCitiesRootsUpdated({ updates: [{ key: 'k', root }] }).updates,
+    ).toEqual([{ key: 'k', root }]);
   });
 });

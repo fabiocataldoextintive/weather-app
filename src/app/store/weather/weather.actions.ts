@@ -1,5 +1,6 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
+import type { AppLocale } from '../../i18n/app-locale';
 import type { Root } from '../../models/root.interface';
 import type { SearchLocation } from '../../models/search-location.interface';
 import type { FavoriteCitiesMap, RecentCitiesMap, VisualizationMode } from './weather.state';
@@ -25,10 +26,14 @@ export const weatherActions = createActionGroup({
     favoriteCityToggled: props<{ cityLabel: string }>(),
     favoriteSelected: props<{ cityLabel: string }>(),
 
+    localeChanged: props<{ locale: AppLocale }>(),
+    recentCitiesRootsUpdated: props<{ updates: { key: string; root: Root }[] }>(),
+
     hydrateFromLocalStorage: props<{
       recentCities: RecentCitiesMap;
       favoritesCities: FavoriteCitiesMap;
       visualizationMode: VisualizationMode;
+      locale: AppLocale;
     }>(),
   },
 });

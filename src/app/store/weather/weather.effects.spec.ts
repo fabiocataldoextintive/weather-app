@@ -40,6 +40,7 @@ describe('WeatherEffects', () => {
     vi.spyOn(weatherStorage, 'writeRecentCitiesToStorage').mockImplementation(() => {});
     vi.spyOn(weatherStorage, 'writeFavoritesToStorage').mockImplementation(() => {});
     vi.spyOn(weatherStorage, 'writeVisualizationMode').mockImplementation(() => {});
+    vi.spyOn(weatherStorage, 'writeLocaleToStorage').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -231,5 +232,57 @@ describe('WeatherEffects', () => {
     actions$.next(weatherActions.visualizationModeChanged({ mode: 'detailed' }));
     await done;
     expect(weatherStorage.writeVisualizationMode).toHaveBeenCalledWith('table');
+  });
+
+  it('loadCurrentWeather passes Spanish lang to API when locale is es', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    const root = mockWeatherRoot();
+    weatherApi.getCurrent.mockReturnValue(of(root));
+    store.setState({
+      weather: { ...initialWeatherState, locale: 'es' },
+    });
+    const emitted = firstValueFrom(effects.loadCurrentWeather$);
+    actions$.next(weatherActions.loadCurrentWeather({ q: 'London', label: 'London, UK' }));
+    const action = await emitted;
+    expect(weatherApi.getCurrent).toHaveBeenCalledWith('London', 'es');
+    expect(action.type).toBe(weatherActions.loadCurrentWeatherSuccess.type);
+  });
+
+  it('refreshRecentOnLocaleChange refetches recent city weather', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    const root = mockWeatherRoot();
+    const updated = {
+      ...root,
+      current: { ...root.current, condition: { ...root.current.condition, text: 'Soleado' } },
+    };
+    weatherApi.getCurrent.mockReturnValue(of(updated));
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        locale: 'es',
+        recentCities: {
+          '40,-74': { key: '40,-74', label: 'NYC', root, updatedAt: 1 },
+        },
+        selectedKey: '40,-74',
+        currentWeather: root,
+      },
+    });
+    const emitted = firstValueFrom(effects.refreshRecentOnLocaleChange$);
+    actions$.next(weatherActions.localeChanged({ locale: 'es' }));
+    const action = await emitted;
+    expect(weatherApi.getCurrent).toHaveBeenCalledWith('40,-74', 'es');
+    expect(action).toEqual(
+      weatherActions.recentCitiesRootsUpdated({
+        updates: [{ key: '40,-74', root: updated }],
+      }),
+    );
+  });
+
+  it('persistLocale writes locale to storage', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    const done = firstValueFrom(effects.persistLocale$);
+    actions$.next(weatherActions.localeChanged({ locale: 'es' }));
+    await done;
+    expect(weatherStorage.writeLocaleToStorage).toHaveBeenCalledWith('es');
   });
 });

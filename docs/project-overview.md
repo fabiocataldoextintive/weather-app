@@ -14,7 +14,7 @@ Single-page Angular application for searching cities via [WeatherAPI](https://ww
 | HTTP | `@angular/common/http` |
 | Styling | SCSS (component-scoped + `src/styles.scss`) |
 | Tests | Vitest 4 + jsdom + `@analogjs/vite-plugin-angular` |
-| i18n | `@angular/localize` (en source, `es` locale) |
+| i18n | `@angular/localize` (build-time) + runtime `I18nPipe` / `messages.ts` (`en`, `es`) |
 | Env / secrets | `@ngx-env/builder` → `import.meta.env.NG_APP_WEATHER_API_KEY` |
 | API | WeatherAPI v1 (`search.json`, `current.json`) |
 

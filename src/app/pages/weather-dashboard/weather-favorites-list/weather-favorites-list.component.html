@@ -1,5 +1,5 @@
-<section class="favorites" i18n-aria-label="@@favorites.section" aria-label="Favorite cities">
-  <h2 class="favorites__title" i18n="@@favorites.title">Favorites</h2>
+<section class="favorites" [attr.aria-label]="'favorites.section' | i18n">
+  <h2 class="favorites__title">{{ 'favorites.title' | i18n }}</h2>
 
   @if (favoritesCount() > 0) {
     <ul class="favorites__list">
@@ -9,8 +9,7 @@
             type="button"
             class="favorites__select"
             (click)="selectFavorite(favorite)"
-            i18n-aria-label="@@favorites.loadCity"
-            [attr.aria-label]="'Load weather for ' + favorite.cityLabel"
+            [attr.aria-label]="'favorites.loadCity' | i18n: { city: favorite.cityLabel }"
           >
             <span class="favorites__star" aria-hidden="true">★</span>
             <span class="favorites__label">{{ favorite.cityLabel }}</span>
@@ -19,8 +18,7 @@
             type="button"
             class="favorites__remove"
             (click)="removeFavorite(favorite, $event)"
-            i18n-aria-label="@@favorites.remove"
-            [attr.aria-label]="'Remove ' + favorite.cityLabel + ' from favorites'"
+            [attr.aria-label]="'favorites.remove' | i18n: { city: favorite.cityLabel }"
           >
             <span aria-hidden="true">×</span>
           </button>
@@ -28,6 +26,6 @@
       }
     </ul>
   } @else {
-    <p class="favorites__empty" i18n="@@favorites.emptyHint">No favorites yet. Open a city in detail view and tap the star.</p>
+    <p class="favorites__empty">{{ 'favorites.emptyHint' | i18n }}</p>
   }
 </section>

@@ -4,11 +4,13 @@ import {
   parseFavorites,
   parseRecentCities,
   readFavoritesFromStorage,
+  readLocaleFromStorage,
   readRecentCitiesFromStorage,
   readVisualizationMode,
   serializeFavorites,
   serializeRecentCities,
   writeFavoritesToStorage,
+  writeLocaleToStorage,
   writeRecentCitiesToStorage,
   writeVisualizationMode,
 } from './weather.storage';
@@ -152,6 +154,14 @@ describe('weather.storage', () => {
       writeFavoritesToStorage({});
       expect(readFavoritesFromStorage()).toEqual({});
     });
+
+    it('read/write locale', () => {
+      expect(readLocaleFromStorage()).toBe('en');
+      writeLocaleToStorage('es');
+      expect(readLocaleFromStorage()).toBe('es');
+      writeLocaleToStorage('en');
+      expect(readLocaleFromStorage()).toBe('en');
+    });
   });
 
   describe('when global localStorage is unavailable', () => {
@@ -170,6 +180,7 @@ describe('weather.storage', () => {
       expect(readVisualizationMode()).toBe('detailed');
       expect(readRecentCitiesFromStorage()).toEqual({});
       expect(readFavoritesFromStorage()).toEqual({});
+      expect(readLocaleFromStorage()).toBe('en');
     });
 
     it('write helpers no-op without throwing', () => {
@@ -177,6 +188,7 @@ describe('weather.storage', () => {
         writeVisualizationMode('table');
         writeRecentCitiesToStorage({});
         writeFavoritesToStorage({});
+        writeLocaleToStorage('es');
       }).not.toThrow();
     });
   });

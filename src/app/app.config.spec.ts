@@ -18,6 +18,7 @@ describe('appConfig', () => {
       vi.spyOn(weatherStorage, 'readRecentCitiesFromStorage').mockReturnValue({});
       vi.spyOn(weatherStorage, 'readFavoritesFromStorage').mockReturnValue({});
       vi.spyOn(weatherStorage, 'readVisualizationMode').mockReturnValue('table');
+      vi.spyOn(weatherStorage, 'readLocaleFromStorage').mockReturnValue('es');
       await TestBed.configureTestingModule({
         providers: appConfig.providers,
       }).compileComponents();
@@ -33,6 +34,8 @@ describe('appConfig', () => {
       const store = TestBed.inject(Store);
       const mode = store.selectSignal(weatherFeature.selectVisualizationMode);
       expect(mode()).toBe('table');
+      const locale = store.selectSignal(weatherFeature.selectLocale);
+      expect(locale()).toBe('es');
       const recent = store.selectSignal(weatherFeature.selectRecentCities);
       expect(recent()).toEqual({});
     });

@@ -44,6 +44,7 @@
 | `recentCities` | Map keyed by query (`lat,lon`) |
 | `favoritesCities` | Map keyed by normalized city label |
 | `visualizationMode` | `'table'` \| `'detailed'` |
+| `locale` | `'en'` \| `'es'` — active UI language (runtime) |
 
 **Effects (`weather.effects.ts`):**
 
@@ -51,9 +52,11 @@
 - `pickSuggestionLoadsWeather$` — maps `suggestionPicked` → `loadCurrentWeather`
 - `recentRowSelectedLoadsWeather$` — maps `recentRowSelected` → `loadCurrentWeather` (fresh API call for history re-run)
 - `favoriteSelectedLoadsWeather$` — maps `favoriteSelected` → `loadCurrentWeather` (city name query)
-- `loadCurrentWeather$` — sanitizes query, calls `getCurrent`, maps errors via `toWeatherUserMessage`
+- `loadCurrentWeather$` — sanitizes query, calls `getCurrent` with `lang` from store locale, maps errors via `toWeatherUserMessage`
+- `refreshRecentOnLocaleChange$` — on `localeChanged`, re-fetches weather for all `recentCities` keys with new API `lang` and updates stored `Root` payloads (condition text localized)
 - `persistRecentAndFavorites$` — writes storage after successful load or favorite toggle (no dispatch)
 - `persistVisualization$` — writes visualization mode on change (no dispatch)
+- `persistLocale$` — writes locale to storage and sets `document.documentElement.lang` (no dispatch)
 
 **Selectors:** `createFeature` defaults plus `selectRecentCitiesOrdered`, `selectRecentCitiesCount`, `selectFavoritesCitiesOrdered`, `selectFavoritesCitiesCount`.
 
@@ -73,6 +76,7 @@
 | `recent-cities` | JSON `{ recentCities: { [key]: { city, weather, updatedAt } } }` (legacy array shapes supported on read) |
 | `favorite-cities` | JSON `{ favoritesCities: { [key]: { cityLabel } } }` |
 | `visualization-mode` | `'table'` or `'detailed'` (legacy `'detail'` normalized to `'detailed'`) |
+| `app-locale` | `'en'` or `'es'` |
 
 Parse/write helpers guard `localStorage` absence (tests, SSR-safe checks).
 
