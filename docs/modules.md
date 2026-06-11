@@ -19,6 +19,7 @@
 - Empty autocomplete (`search.json` returns `[]` for valid query) → `searchValidationFailed` with `err.noCitySuggestions` (shown under search input)
 - View toggle: table vs detailed (`visualizationModeChanged`)
 - **Language selector** (header, top-right): English / Spanish segmented control → `localeChanged`; persists to `localStorage` key `app-locale`
+- **Offline banner** when `ConnectivityService.isOnline()` is false (`err.offlineBanner`)
 - Loading and error banners driven by `currentStatus` / `currentError`
 - Embeds **`WeatherFavoritesListComponent`** (always visible below search)
 
@@ -63,6 +64,13 @@
 | `searchLocations(q)` | `/search.json` | Trims query; errors → observable error |
 | `getCurrent(q, lang?)` | `/current.json` | Optional `lang` query param |
 
+### `ConnectivityService`
+
+**Path:** `services/connectivity/connectivity.service.ts`
+
+- Signal `isOnline` — mirrors `navigator.onLine`, updates on `online` / `offline` window events
+- Used by effects to gate WeatherAPI calls and by dashboard for offline banner
+
 ## Store module (`store/weather/`)
 
 | File | Role |
@@ -87,6 +95,7 @@
 | File | Purpose |
 |------|---------|
 | `helpers/weather-search-query.ts` | `sanitizeWeatherSearchInput`, `countLettersAndDigits` (min length 2 for API) |
+| `helpers/search-stored-cities.ts` | Offline autocomplete against saved favorites/history by city name |
 | `helpers/clean-text.ts` | Normalize labels for display and favorite keys (NFD, strip accents) |
 
 ## Models (`models/`)
