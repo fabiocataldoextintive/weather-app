@@ -145,5 +145,11 @@
         <target>Esa búsqueda no es válida. Usa letras o números (por ejemplo un nombre de ciudad o coordenadas).</target>
       </segment>
     </unit>
+    <unit id="err.noCitySuggestions">
+      <segment>
+        <source>No city suggestions available. Try writing another city.</source>
+        <target>No hay sugerencias de ciudad. Prueba escribiendo otra ciudad.</target>
+      </segment>
+    </unit>
   </file>
 </xliff>

@@ -16,6 +16,7 @@
 - Search input bound to store (`searchText`) via `FormsModule`
 - Autocomplete list from `suggestions` / `showSuggestions`
 - Keyboard: `Escape` dismisses suggestions; `Enter` picks first suggestion
+- Empty autocomplete (`search.json` returns `[]` for valid query) → `searchValidationFailed` with `err.noCitySuggestions` (shown under search input)
 - View toggle: table vs detailed (`visualizationModeChanged`)
 - **Language selector** (header, top-right): English / Spanish segmented control → `localeChanged`; persists to `localStorage` key `app-locale`
 - Loading and error banners driven by `currentStatus` / `currentError`
