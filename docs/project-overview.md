@@ -15,6 +15,7 @@ Single-page Angular application for searching cities via [WeatherAPI](https://ww
 | Styling | SCSS (component-scoped + `src/styles.scss`) |
 | Tests | Vitest 4 + jsdom + `@analogjs/vite-plugin-angular` |
 | i18n | `@angular/localize` (build-time) + runtime `I18nPipe` / `messages.ts` (`en`, `es`) |
+| PWA | `@angular/service-worker` (production builds); `manifest.webmanifest`; offline favorites/history |
 | Env / secrets | `@ngx-env/builder` → `import.meta.env.NG_APP_WEATHER_API_KEY` |
 | API | WeatherAPI v1 (`search.json`, `current.json`) |
 
@@ -47,6 +48,7 @@ API key is **not** committed. Copy `.env.example` → `.env` and set `NG_APP_WEA
 | `npm start` | Dev server (`ng serve`) |
 | `npm run start:es` | Dev server with Spanish locale |
 | `npm run build:dev` | Development build |
+| `ng build --configuration=production` | Production build with service worker (PWA) |
 | `npm run test` | Vitest watch |
 | `npm run test:run` | Vitest single run |
 | `npm run test:coverage` | Coverage report |

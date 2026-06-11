@@ -30,6 +30,10 @@
     <p class="dashboard__hint">{{ 'dashboard.hint' | i18n }}</p>
   </header>
 
+  @if (!isOnline()) {
+    <p class="status status--offline" role="status" aria-live="polite">{{ 'err.offlineBanner' | i18n }}</p>
+  }
+
   <section class="search" [attr.aria-label]="'dashboard.searchSection' | i18n">
     <label class="search__label" for="city-search">{{ 'dashboard.cityLabel' | i18n }}</label>
     <div class="search__row">

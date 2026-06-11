@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { signal } from '@angular/core';
 
+import { ConnectivityService } from '../../services/connectivity/connectivity.service';
 import { weatherActions } from '../../store/weather/weather.actions';
 import { initialWeatherState } from '../../store/weather/weather.state';
 import type { SearchLocation } from '../../models/search-location.interface';
@@ -28,6 +30,7 @@ describe('WeatherDashboardComponent', () => {
         provideMockStore({
           initialState: { weather: initialWeatherState },
         }),
+        { provide: ConnectivityService, useValue: { isOnline: signal(true) } },
       ],
     }).compileComponents();
 
@@ -83,6 +86,40 @@ describe('WeatherDashboardComponent', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(
       weatherActions.suggestionPicked({
         q: `${sampleLocation.lat},${sampleLocation.lon}`,
+        label: 'paris, france',
+      }),
+    );
+  });
+
+  it('should dispatch suggestionPicked with stored q when picking offline suggestion', () => {
+    dispatchSpy.mockClear();
+    const cmp = fixture.componentInstance as unknown as {
+      pickLocation(loc: SearchLocation): void;
+    };
+    cmp.pickLocation({
+      ...sampleLocation,
+      url: 'offline:paris, france',
+    });
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      weatherActions.suggestionPicked({
+        q: 'paris, france',
+        label: 'paris, france',
+      }),
+    );
+  });
+
+  it('should use city name as label when picking offline history keyed by coordinates', () => {
+    dispatchSpy.mockClear();
+    const cmp = fixture.componentInstance as unknown as {
+      pickLocation(loc: SearchLocation): void;
+    };
+    cmp.pickLocation({
+      ...sampleLocation,
+      url: 'offline:48.85,2.35',
+    });
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      weatherActions.suggestionPicked({
+        q: '48.85,2.35',
         label: 'paris, france',
       }),
     );
@@ -188,5 +225,23 @@ describe('WeatherDashboardComponent', () => {
     };
     cmp.setLocale('en');
     expect(dispatchSpy).not.toHaveBeenCalled();
+  });
+
+  it('should show offline banner when connectivity is offline', async () => {
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [WeatherDashboardComponent],
+      providers: [
+        provideMockStore({
+          initialState: { weather: initialWeatherState },
+        }),
+        { provide: ConnectivityService, useValue: { isOnline: signal(false) } },
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(WeatherDashboardComponent);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.status--offline')?.textContent).toContain('offline');
+    expect(el.querySelector('#city-search')?.hasAttribute('disabled')).toBe(false);
   });
 });

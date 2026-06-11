@@ -30,6 +30,15 @@
 3. `provideAppInitializer` — hydrates store from `localStorage` via `weatherActions.hydrateFromLocalStorage`
 4. `provideRouter(routes)` — routes array is empty (no lazy features yet)
 5. `provideHttpClient()` for API calls
+6. `provideServiceWorker('ngsw-worker.js')` — **production only**; caches app shell via `ngsw-config.json`
+
+## PWA & offline (INT-15)
+
+- **Installable:** `public/manifest.webmanifest` + icons under `public/icons/`
+- **Service worker:** enabled on production build (`angular.json` → `serviceWorker: "ngsw-config.json"`)
+- **Offline data:** favorites and search history hydrate from `localStorage` on startup (no network required)
+- **Offline UX:** `ConnectivityService` tracks `navigator.onLine`; dashboard shows offline banner
+- **Live weather offline:** search matches saved `recentCities` / `favoritesCities` by city name (`searchStoredCities`); picking cached history loads stored weather; uncached live fetch shows `err.offlineLiveWeather`; no-match shows `err.offlineSearch`. Search input always enabled.
 
 ## State management (NgRx)
 

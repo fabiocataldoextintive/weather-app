@@ -37,7 +37,10 @@ export type MessageId =
   | 'err.apiLoadPrefix'
   | 'err.generic'
   | 'err.invalidSearchQuery'
-  | 'err.noCitySuggestions';
+  | 'err.noCitySuggestions'
+  | 'err.offlineBanner'
+  | 'err.offlineLiveWeather'
+  | 'err.offlineSearch';
 
 type MessageCatalog = Record<MessageId, string>;
 
@@ -82,6 +85,10 @@ export const MESSAGES: Record<AppLocale, MessageCatalog> = {
     'err.invalidSearchQuery':
       'That search is not valid. Use letters or numbers (for example a city name or coordinates).',
     'err.noCitySuggestions': 'No city suggestions available. Try writing another city.',
+    'err.offlineBanner':
+      'You are offline. Search saved favorites and history below; live weather needs a network connection.',
+    'err.offlineLiveWeather': 'Live weather requires a network connection.',
+    'err.offlineSearch': 'No saved cities match that search. Try a name from your favorites or history.',
   },
   es: {
     'card.favoriteToggle': 'Cambiar favorito',
@@ -123,5 +130,10 @@ export const MESSAGES: Record<AppLocale, MessageCatalog> = {
       'Esa búsqueda no es válida. Usa letras o números (por ejemplo un nombre de ciudad o coordenadas).',
     'err.noCitySuggestions':
       'No hay sugerencias de ciudad. Prueba escribiendo otra ciudad.',
+    'err.offlineBanner':
+      'Estás sin conexión. Busca en favoritos e historial guardados; el tiempo en vivo necesita red.',
+    'err.offlineLiveWeather': 'El tiempo en vivo requiere conexión a la red.',
+    'err.offlineSearch':
+      'Ninguna ciudad guardada coincide con esa búsqueda. Prueba un nombre de favoritos o historial.',
   },
 };

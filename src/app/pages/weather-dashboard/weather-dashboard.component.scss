@@ -186,4 +186,12 @@
     color: #b91c1c;
     font-weight: 500;
   }
+
+  &--offline {
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fdba74;
+  }
 }

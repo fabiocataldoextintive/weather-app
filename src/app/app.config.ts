@@ -6,6 +6,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
+import { provideServiceWorker } from '@angular/service-worker';
 import { provideEffects } from '@ngrx/effects';
 import { provideState, provideStore, Store } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
@@ -29,6 +30,14 @@ export const appConfig: ApplicationConfig = {
     provideState(weatherFeature),
     provideEffects(WeatherEffects),
     ...(isDevMode() ? [provideStoreDevtools({ maxAge: 60 })] : []),
+    ...(!isDevMode()
+      ? [
+          provideServiceWorker('ngsw-worker.js', {
+            enabled: true,
+            registrationStrategy: 'registerWhenStable:30000',
+          }),
+        ]
+      : []),
     provideAppInitializer(() => {
       const locale = readLocaleFromStorage();
       if (typeof document !== 'undefined') {
