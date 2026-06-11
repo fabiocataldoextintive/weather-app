@@ -70,3 +70,14 @@ export function recentCitiesOrdered(map: RecentCitiesMap): RecentCity[] {
 export function favoritesCitiesOrdered(map: FavoriteCitiesMap): FavoriteCity[] {
   return Object.values(map).sort((a, b) => a.cityLabel.localeCompare(b.cityLabel));
 }
+
+/** Match a favorite label to cached history row when possible. */
+export function findRecentCityForFavorite(
+  recentCities: RecentCitiesMap,
+  cityLabel: string,
+): RecentCity | undefined {
+  const fk = favoriteCityKey(cityLabel);
+  return Object.values(recentCities).find(
+    (row) => row.label === cityLabel || favoriteCityKey(row.label) === fk,
+  );
+}

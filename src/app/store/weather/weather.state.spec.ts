@@ -2,6 +2,7 @@ import { mockWeatherRoot } from './weather-test-fixtures';
 import {
   favoriteCityKey,
   favoritesCitiesOrdered,
+  findRecentCityForFavorite,
   initialWeatherState,
   recentCitiesOrdered,
   type FavoriteCitiesMap,
@@ -46,6 +47,16 @@ describe('weather.state helpers', () => {
         a: { cityLabel: 'amsterdam' },
       };
       expect(favoritesCitiesOrdered(map).map((f) => f.cityLabel)).toEqual(['amsterdam', 'zurich']);
+    });
+  });
+
+  describe('findRecentCityForFavorite', () => {
+    it('finds history row by favorite label', () => {
+      const root = mockWeatherRoot();
+      const map: RecentCitiesMap = {
+        '48.85,2.35': { key: '48.85,2.35', label: 'paris, france', root, updatedAt: 1 },
+      };
+      expect(findRecentCityForFavorite(map, 'paris, france')?.key).toBe('48.85,2.35');
     });
   });
 

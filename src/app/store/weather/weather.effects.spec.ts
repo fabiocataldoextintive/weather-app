@@ -2,10 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { signal, type WritableSignal } from '@angular/core';
 import { firstValueFrom, of, throwError } from 'rxjs';
 import { Subject } from 'rxjs';
 
 import { sanitizeWeatherSearchInput } from '../../helpers/weather-search-query';
+import { ConnectivityService } from '../../services/connectivity/connectivity.service';
 import { WeatherService } from '../../services/weather/weather.service';
 import type { SearchLocation } from '../../models/search-location.interface';
 import { weatherActions } from './weather.actions';
@@ -18,9 +20,11 @@ describe('WeatherEffects', () => {
   let actions$: Subject<Action>;
   let weatherApi: { searchLocations: ReturnType<typeof vi.fn>; getCurrent: ReturnType<typeof vi.fn> };
   let store: MockStore;
+  let isOnline: WritableSignal<boolean>;
 
   beforeEach(() => {
     vi.useFakeTimers();
+    isOnline = signal(true);
     actions$ = new Subject<Action>();
     weatherApi = {
       searchLocations: vi.fn(),
@@ -34,6 +38,7 @@ describe('WeatherEffects', () => {
           initialState: { weather: initialWeatherState },
         }),
         { provide: WeatherService, useValue: weatherApi },
+        { provide: ConnectivityService, useValue: { isOnline } },
       ],
     });
     store = TestBed.inject(MockStore);
@@ -307,5 +312,150 @@ describe('WeatherEffects', () => {
     actions$.next(weatherActions.localeChanged({ locale: 'es' }));
     await done;
     expect(weatherStorage.writeLocaleToStorage).toHaveBeenCalledWith('es');
+  });
+
+  it('autocomplete searches stored cities when offline', async () => {
+    isOnline.set(false);
+    const effects = TestBed.inject(WeatherEffects);
+    const root = mockWeatherRoot();
+    const emitted: Action[] = [];
+    const sub = effects.autocomplete$.subscribe((a) => emitted.push(a));
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        searchText: sanitizeWeatherSearchInput('paris'),
+        recentCities: {
+          '48.85,2.35': { key: '48.85,2.35', label: 'paris, france', root, updatedAt: 1 },
+        },
+      },
+    });
+    actions$.next(weatherActions.searchInputChanged({ raw: 'paris' }));
+    await vi.advanceTimersByTimeAsync(300);
+    sub.unsubscribe();
+    expect(weatherApi.searchLocations).not.toHaveBeenCalled();
+    expect(emitted).toContainEqual(
+      weatherActions.suggestionsResolved({ list: expect.any(Array), show: true }),
+    );
+  });
+
+  it('autocomplete shows offline validation when no stored city matches', async () => {
+    isOnline.set(false);
+    const effects = TestBed.inject(WeatherEffects);
+    const emitted: Action[] = [];
+    const sub = effects.autocomplete$.subscribe((a) => emitted.push(a));
+    actions$.next(weatherActions.searchInputChanged({ raw: 'tokyo' }));
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        searchText: sanitizeWeatherSearchInput('tokyo'),
+      },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    sub.unsubscribe();
+    expect(emitted).toContainEqual(
+      weatherActions.searchValidationFailed({
+        message: 'No saved cities match that search. Try a name from your favorites or history.',
+      }),
+    );
+  });
+
+  it('loadCurrentWeather loads cached weather offline when suggestion matches history', async () => {
+    isOnline.set(false);
+    const effects = TestBed.inject(WeatherEffects);
+    const root = mockWeatherRoot();
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        recentCities: {
+          '48.85,2.35': { key: '48.85,2.35', label: 'paris, france', root, updatedAt: 1 },
+        },
+      },
+    });
+    const emitted = firstValueFrom(effects.loadCurrentWeather$);
+    actions$.next(weatherActions.loadCurrentWeather({ q: '48.85,2.35', label: 'paris, france' }));
+    const action = await emitted;
+    expect(weatherApi.getCurrent).not.toHaveBeenCalled();
+    expect(action).toEqual(
+      weatherActions.loadCurrentWeatherSuccess({
+        q: '48.85,2.35',
+        label: 'paris, france',
+        root,
+      }),
+    );
+  });
+
+  it('loadCurrentWeather fails with offline message when offline', async () => {
+    isOnline.set(false);
+    const effects = TestBed.inject(WeatherEffects);
+    const emitted = firstValueFrom(effects.loadCurrentWeather$);
+    actions$.next(weatherActions.loadCurrentWeather({ q: 'London', label: 'London, UK' }));
+    const action = await emitted;
+    expect(weatherApi.getCurrent).not.toHaveBeenCalled();
+    expect(action).toEqual(
+      weatherActions.loadCurrentWeatherFailure({
+        userMessage: 'Live weather requires a network connection.',
+      }),
+    );
+  });
+
+  it('recentRowSelected serves cached weather when offline', async () => {
+    isOnline.set(false);
+    const effects = TestBed.inject(WeatherEffects);
+    const root = mockWeatherRoot();
+    const key = '40,-74';
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        recentCities: {
+          [key]: { key, label: 'NYC', root, updatedAt: 1 },
+        },
+      },
+    });
+    const emitted = firstValueFrom(effects.recentRowSelectedLoadsWeather$);
+    actions$.next(weatherActions.recentRowSelected({ key }));
+    const action = await emitted;
+    expect(weatherApi.getCurrent).not.toHaveBeenCalled();
+    expect(action).toEqual(
+      weatherActions.loadCurrentWeatherSuccess({ q: key, label: 'NYC', root }),
+    );
+  });
+
+  it('favoriteSelected fails offline when no cached history exists', async () => {
+    isOnline.set(false);
+    const effects = TestBed.inject(WeatherEffects);
+    const fk = 'paris fr';
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        favoritesCities: { [fk]: { cityLabel: fk } },
+      },
+    });
+    const emitted = firstValueFrom(effects.favoriteSelectedLoadsWeather$);
+    actions$.next(weatherActions.favoriteSelected({ cityLabel: fk }));
+    const action = await emitted;
+    expect(action).toEqual(
+      weatherActions.loadCurrentWeatherFailure({
+        userMessage: 'Live weather requires a network connection.',
+      }),
+    );
+  });
+
+  it('refreshRecentOnLocaleChange skips API when offline', async () => {
+    isOnline.set(false);
+    const effects = TestBed.inject(WeatherEffects);
+    const root = mockWeatherRoot();
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        recentCities: {
+          '40,-74': { key: '40,-74', label: 'NYC', root, updatedAt: 1 },
+        },
+      },
+    });
+    const emitted = firstValueFrom(effects.refreshRecentOnLocaleChange$);
+    actions$.next(weatherActions.localeChanged({ locale: 'es' }));
+    const action = await emitted;
+    expect(weatherApi.getCurrent).not.toHaveBeenCalled();
+    expect(action).toEqual(weatherActions.recentCitiesRootsUpdated({ updates: [] }));
   });
 });

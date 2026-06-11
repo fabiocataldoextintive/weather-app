@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
 import { cleanText } from '../../helpers/clean-text';
+import { parseOfflinePick } from '../../helpers/search-stored-cities';
 import type { AppLocale } from '../../i18n/app-locale';
 import { I18nPipe } from '../../i18n/i18n.pipe';
 import type { SearchLocation } from '../../models/search-location.interface';
 import { weatherActions } from '../../store/weather/weather.actions';
 import { weatherFeature } from '../../store/weather/weather.reducer';
+import { ConnectivityService } from '../../services/connectivity/connectivity.service';
 import { WeatherDetailPanelComponent } from './weather-detail-panel/weather-detail-panel.component';
 import { WeatherFavoritesListComponent } from './weather-favorites-list/weather-favorites-list.component';
 import { WeatherResultsTableComponent } from './weather-results-table/weather-results-table.component';
@@ -22,6 +24,9 @@ import { WeatherResultsTableComponent } from './weather-results-table/weather-re
 })
 export class WeatherDashboardComponent {
   private readonly store = inject(Store);
+  private readonly connectivity = inject(ConnectivityService);
+
+  protected readonly isOnline = this.connectivity.isOnline;
 
   protected readonly searchText = this.store.selectSignal(weatherFeature.selectSearchText);
   protected readonly suggestions = this.store.selectSignal(weatherFeature.selectSuggestions);
@@ -42,8 +47,9 @@ export class WeatherDashboardComponent {
   }
 
   protected pickLocation(loc: SearchLocation): void {
-    const q = `${loc.lat},${loc.lon}`;
-    const label = cleanText(`${loc.name}, ${loc.country}`);
+    const offlineQ = parseOfflinePick(loc.url);
+    const q = offlineQ ?? `${loc.lat},${loc.lon}`;
+    const label = cleanText(loc.country ? `${loc.name}, ${loc.country}` : loc.name);
     this.store.dispatch(weatherActions.suggestionPicked({ q, label }));
   }
 
