@@ -50,6 +50,21 @@ describe('WeatherDashboardComponent', () => {
     expect(el.querySelector('.status--loading')?.textContent).toContain('Loading weather');
   });
 
+  it('should show search validation message from store', () => {
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        searchValidationMessage:
+          'No city suggestions available. Try writing another city.',
+      },
+    });
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.search__validation')?.textContent).toContain(
+      'No city suggestions available',
+    );
+  });
+
   it('should dispatch searchInputChanged on search input', () => {
     const cmp = fixture.componentInstance as unknown as {
       onSearchInput(value: string): void;

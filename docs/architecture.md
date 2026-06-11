@@ -48,7 +48,7 @@
 
 **Effects (`weather.effects.ts`):**
 
-- `autocomplete$` — debounce 300ms on `searchInputChanged`; calls `searchLocations` when query ≥ 2 letters/digits
+- `autocomplete$` — debounce 300ms on `searchInputChanged`; calls `searchLocations` when query ≥ 2 letters/digits; empty API array dispatches `searchValidationFailed` (`err.noCitySuggestions`)
 - `pickSuggestionLoadsWeather$` — maps `suggestionPicked` → `loadCurrentWeather`
 - `recentRowSelectedLoadsWeather$` — maps `recentRowSelected` → `loadCurrentWeather` (fresh API call for history re-run)
 - `favoriteSelectedLoadsWeather$` — maps `favoriteSelected` → `loadCurrentWeather` (city name query)

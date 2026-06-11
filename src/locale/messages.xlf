@@ -193,5 +193,13 @@
         <source>That search is not valid. Use letters or numbers (for example a city name or coordinates).</source>
       </segment>
     </unit>
+    <unit id="err.noCitySuggestions">
+      <notes>
+        <note category="location">src/app/store/weather/weather.effects.ts</note>
+      </notes>
+      <segment>
+        <source>No city suggestions available. Try writing another city.</source>
+      </segment>
+    </unit>
   </file>
 </xliff>

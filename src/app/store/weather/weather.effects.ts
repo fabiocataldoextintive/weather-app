@@ -29,13 +29,26 @@ export class WeatherEffects {
     this.actions$.pipe(
       ofType(weatherActions.searchInputChanged),
       debounceTime(300),
-      withLatestFrom(this.store.select(weatherFeature.selectSearchText)),
-      switchMap(([, q]) => {
+      withLatestFrom(
+        this.store.select(weatherFeature.selectSearchText),
+        this.store.select(weatherFeature.selectLocale),
+      ),
+      switchMap(([, q, locale]) => {
         if (q.length < MIN_SEARCH_QUERY_LEN || countLettersAndDigits(q) < MIN_SEARCH_QUERY_LEN) {
           return of(weatherActions.suggestionsResolved({ list: [], show: false }));
         }
         return this.weather.searchLocations(q).pipe(
-          map((list) => weatherActions.suggestionsResolved({ list, show: list.length > 0 })),
+          switchMap((list) => {
+            if (list.length === 0) {
+              return of(
+                weatherActions.suggestionsResolved({ list, show: false }),
+                weatherActions.searchValidationFailed({
+                  message: translate('err.noCitySuggestions', locale),
+                }),
+              );
+            }
+            return of(weatherActions.suggestionsResolved({ list, show: true }));
+          }),
           catchError(() => of(weatherActions.suggestionsResolved({ list: [], show: false }))),
         );
       }),

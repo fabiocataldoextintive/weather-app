@@ -68,6 +68,29 @@ describe('WeatherEffects', () => {
     expect(action).toEqual(weatherActions.suggestionsResolved({ list: [], show: false }));
   });
 
+  it('autocomplete emits validation message when API returns empty list', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    weatherApi.searchLocations.mockReturnValue(of([]));
+    const emitted: Action[] = [];
+    const sub = effects.autocomplete$.subscribe((a) => emitted.push(a));
+    actions$.next(weatherActions.searchInputChanged({ raw: 'ddddddddasdasdasdasdasd' }));
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        searchText: sanitizeWeatherSearchInput('ddddddddasdasdasdasdasd'),
+      },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    sub.unsubscribe();
+    expect(weatherApi.searchLocations).toHaveBeenCalled();
+    expect(emitted).toContainEqual(weatherActions.suggestionsResolved({ list: [], show: false }));
+    expect(emitted).toContainEqual(
+      weatherActions.searchValidationFailed({
+        message: 'No city suggestions available. Try writing another city.',
+      }),
+    );
+  });
+
   it('autocomplete calls API when query is valid', async () => {
     const effects = TestBed.inject(WeatherEffects);
     const loc: SearchLocation = {

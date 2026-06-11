@@ -36,7 +36,8 @@ export type MessageId =
   | 'err.locationNotFound'
   | 'err.apiLoadPrefix'
   | 'err.generic'
-  | 'err.invalidSearchQuery';
+  | 'err.invalidSearchQuery'
+  | 'err.noCitySuggestions';
 
 type MessageCatalog = Record<MessageId, string>;
 
@@ -80,6 +81,7 @@ export const MESSAGES: Record<AppLocale, MessageCatalog> = {
     'err.generic': 'Something went wrong. Check your connection and try again.',
     'err.invalidSearchQuery':
       'That search is not valid. Use letters or numbers (for example a city name or coordinates).',
+    'err.noCitySuggestions': 'No city suggestions available. Try writing another city.',
   },
   es: {
     'card.favoriteToggle': 'Cambiar favorito',
@@ -119,5 +121,7 @@ export const MESSAGES: Record<AppLocale, MessageCatalog> = {
     'err.generic': 'Algo salió mal. Comprueba la conexión e inténtalo de nuevo.',
     'err.invalidSearchQuery':
       'Esa búsqueda no es válida. Usa letras o números (por ejemplo un nombre de ciudad o coordenadas).',
+    'err.noCitySuggestions':
+      'No hay sugerencias de ciudad. Prueba escribiendo otra ciudad.',
   },
 };
