@@ -5,6 +5,7 @@ import { catchError, debounceTime, filter, forkJoin, map, of, switchMap, tap, wi
 
 import { toWeatherApiLang } from '../../i18n/app-locale';
 import { translate } from '../../i18n/translate';
+import { isWeatherRefreshDue, lastUpdateToMs } from '../../helpers/weather-refresh';
 import { countLettersAndDigits, sanitizeWeatherSearchInput } from '../../helpers/weather-search-query';
 import { searchStoredCities } from '../../helpers/search-stored-cities';
 import type { Root } from '../../models/root.interface';
@@ -18,6 +19,7 @@ import {
   writeLocaleToStorage,
   writeRecentCitiesToStorage,
   writeVisualizationMode,
+  writeWeatherUpdateIntervalToStorage,
 } from './weather.storage';
 import { findRecentCityForFavorite, MIN_SEARCH_QUERY_LEN, favoriteCityKey, type RecentCity, type RecentCitiesMap } from './weather.state';
 
@@ -26,6 +28,11 @@ function resolveCachedWeather(q: string, label: string, recentCities: RecentCiti
     return recentCities[q];
   }
   return findRecentCityForFavorite(recentCities, label) ?? findRecentCityForFavorite(recentCities, q);
+}
+
+function shouldFetchFreshWeather(cached: RecentCity | undefined, intervalMs: number): boolean {
+  if (!cached) return true;
+  return isWeatherRefreshDue(lastUpdateToMs(cached.lastUpdate, cached.updatedAt), intervalMs);
 }
 
 @Injectable()
@@ -89,11 +96,21 @@ export class WeatherEffects {
   readonly recentRowSelectedLoadsWeather$ = createEffect(() =>
     this.actions$.pipe(
       ofType(weatherActions.recentRowSelected),
-      withLatestFrom(this.store.select(weatherFeature.selectRecentCities)),
+      withLatestFrom(
+        this.store.select(weatherFeature.selectRecentCities),
+        this.store.select(weatherFeature.selectWeatherUpdateTimeInterval),
+      ),
       filter(([{ key }, recentCities]) => Boolean(recentCities[key])),
-      map(([{ key }, recentCities]) => {
+      map(([{ key }, recentCities, intervalMs]) => {
         const row = recentCities[key];
         if (!this.connectivity.isOnline()) {
+          return weatherActions.loadCurrentWeatherSuccess({
+            q: key,
+            label: row.label,
+            root: row.root,
+          });
+        }
+        if (!shouldFetchFreshWeather(row, intervalMs)) {
           return weatherActions.loadCurrentWeatherSuccess({
             q: key,
             label: row.label,
@@ -112,11 +129,14 @@ export class WeatherEffects {
         this.store.select(weatherFeature.selectFavoritesCities),
         this.store.select(weatherFeature.selectRecentCities),
         this.store.select(weatherFeature.selectLocale),
+        this.store.select(weatherFeature.selectWeatherUpdateTimeInterval),
       ),
       filter(([{ cityLabel }, favoritesCities]) => Boolean(favoritesCities[favoriteCityKey(cityLabel)])),
-      switchMap(([{ cityLabel }, , recentCities, locale]) => {
+      switchMap(([{ cityLabel }, favoritesCities, recentCities, locale, intervalMs]) => {
+        const fk = favoriteCityKey(cityLabel);
+        const favorite = favoritesCities[fk];
+        const cached = findRecentCityForFavorite(recentCities, cityLabel);
         if (!this.connectivity.isOnline()) {
-          const cached = findRecentCityForFavorite(recentCities, cityLabel);
           if (cached) {
             return of(
               weatherActions.loadCurrentWeatherSuccess({
@@ -129,6 +149,16 @@ export class WeatherEffects {
           return of(
             weatherActions.loadCurrentWeatherFailure({
               userMessage: translate('err.offlineLiveWeather', locale),
+            }),
+          );
+        }
+        const lastUpdateMs = lastUpdateToMs(favorite?.lastUpdate, cached?.updatedAt);
+        if (cached && !isWeatherRefreshDue(lastUpdateMs, intervalMs)) {
+          return of(
+            weatherActions.loadCurrentWeatherSuccess({
+              q: cached.key,
+              label: cached.label,
+              root: cached.root,
             }),
           );
         }
@@ -143,8 +173,9 @@ export class WeatherEffects {
       withLatestFrom(
         this.store.select(weatherFeature.selectLocale),
         this.store.select(weatherFeature.selectRecentCities),
+        this.store.select(weatherFeature.selectWeatherUpdateTimeInterval),
       ),
-      switchMap(([{ q, label }, locale, recentCities]) => {
+      switchMap(([{ q, label }, locale, recentCities, intervalMs]) => {
         const qApi = sanitizeWeatherSearchInput(q);
         if (qApi.length < MIN_SEARCH_QUERY_LEN || countLettersAndDigits(qApi) < MIN_SEARCH_QUERY_LEN) {
           return of(
@@ -153,8 +184,8 @@ export class WeatherEffects {
             }),
           );
         }
+        const cached = resolveCachedWeather(qApi, label, recentCities);
         if (!this.connectivity.isOnline()) {
-          const cached = resolveCachedWeather(qApi, label, recentCities);
           if (cached) {
             return of(
               weatherActions.loadCurrentWeatherSuccess({
@@ -167,6 +198,15 @@ export class WeatherEffects {
           return of(
             weatherActions.loadCurrentWeatherFailure({
               userMessage: translate('err.offlineLiveWeather', locale),
+            }),
+          );
+        }
+        if (cached && !shouldFetchFreshWeather(cached, intervalMs)) {
+          return of(
+            weatherActions.loadCurrentWeatherSuccess({
+              q: cached.key,
+              label: cached.label,
+              root: cached.root,
             }),
           );
         }
@@ -253,6 +293,17 @@ export class WeatherEffects {
           if (typeof document !== 'undefined') {
             document.documentElement.lang = locale;
           }
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  readonly persistWeatherUpdateInterval$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(weatherActions.weatherUpdateIntervalChanged),
+        tap(({ intervalMs }) => {
+          writeWeatherUpdateIntervalToStorage(intervalMs);
         }),
       ),
     { dispatch: false },

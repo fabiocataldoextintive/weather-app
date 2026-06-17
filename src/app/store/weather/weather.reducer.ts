@@ -1,6 +1,7 @@
 import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
 
 import { sanitizeWeatherSearchInput } from '../../helpers/weather-search-query';
+import { createLastUpdateTimestamp } from '../../helpers/weather-refresh';
 import type { Root } from '../../models/root.interface';
 import { weatherActions } from './weather.actions';
 import {
@@ -13,10 +14,22 @@ import {
 
 function upsertRecentMap(state: WeatherState, key: string, label: string, root: Root): RecentCitiesMap {
   const now = Date.now();
+  const lastUpdate = createLastUpdateTimestamp(now);
   return {
     ...state.recentCities,
-    [key]: { key, label, root, updatedAt: now },
+    [key]: { key, label, root, updatedAt: now, lastUpdate },
   };
+}
+
+function syncFavoriteLastUpdate(
+  favorites: WeatherState['favoritesCities'],
+  cityLabel: string,
+  lastUpdate: string,
+): WeatherState['favoritesCities'] {
+  const fk = favoriteCityKey(cityLabel);
+  const fav = favorites[fk];
+  if (!fav) return favorites;
+  return { ...favorites, [fk]: { ...fav, lastUpdate } };
 }
 
 const weatherReducer = createReducer(
@@ -57,15 +70,21 @@ const weatherReducer = createReducer(
     currentError: null,
     activeLocationLabel: null,
   })),
-  on(weatherActions.loadCurrentWeatherSuccess, (state, { q, label, root }) => ({
-    ...state,
-    currentStatus: 'success',
-    currentWeather: root,
-    currentError: null,
-    selectedKey: q,
-    activeLocationLabel: label,
-    recentCities: upsertRecentMap(state, q, label, root),
-  })),
+  on(weatherActions.loadCurrentWeatherSuccess, (state, { q, label, root }) => {
+    const recentCities = upsertRecentMap(state, q, label, root);
+    const row = recentCities[q];
+    const lastUpdate = row?.lastUpdate ?? createLastUpdateTimestamp();
+    return {
+      ...state,
+      currentStatus: 'success',
+      currentWeather: root,
+      currentError: null,
+      selectedKey: q,
+      activeLocationLabel: label,
+      recentCities,
+      favoritesCities: syncFavoriteLastUpdate(state.favoritesCities, label, lastUpdate),
+    };
+  }),
   on(weatherActions.loadCurrentWeatherFailure, (state, { userMessage }) => ({
     ...state,
     currentStatus: 'error',
@@ -99,10 +118,17 @@ const weatherReducer = createReducer(
     if (next[fk]) {
       delete next[fk];
     } else {
-      next[fk] = { cityLabel: fk };
+      const cached = Object.values(state.recentCities).find(
+        (row) => row.label === cityLabel || favoriteCityKey(row.label) === fk,
+      );
+      next[fk] = { cityLabel: fk, lastUpdate: cached?.lastUpdate };
     }
     return { ...state, favoritesCities: next };
   }),
+  on(weatherActions.weatherUpdateIntervalChanged, (state, { intervalMs }) => ({
+    ...state,
+    weatherUpdateTimeInterval: intervalMs,
+  })),
   on(weatherActions.localeChanged, (state, { locale }) => ({
     ...state,
     locale,
@@ -124,12 +150,13 @@ const weatherReducer = createReducer(
       currentWeather: selected?.root ?? state.currentWeather,
     };
   }),
-  on(weatherActions.hydrateFromLocalStorage, (state, { recentCities, favoritesCities, visualizationMode, locale }) => ({
+  on(weatherActions.hydrateFromLocalStorage, (state, { recentCities, favoritesCities, visualizationMode, locale, weatherUpdateTimeInterval }) => ({
     ...state,
     recentCities,
     favoritesCities,
     visualizationMode,
     locale,
+    weatherUpdateTimeInterval,
   })),
 );
 

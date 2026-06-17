@@ -227,6 +227,44 @@ describe('WeatherDashboardComponent', () => {
     expect(dispatchSpy).not.toHaveBeenCalled();
   });
 
+  it('should render refresh interval options in ascending order', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    const buttons = el.querySelectorAll('.interval-selector__btn');
+    expect(buttons.length).toBe(4);
+    expect(buttons[0]?.textContent).toContain('5 minutes');
+    expect(buttons[3]?.textContent).toContain('30 minutes');
+  });
+
+  it('should show Spanish interval labels when locale is es', () => {
+    store.setState({
+      weather: { ...initialWeatherState, locale: 'es' },
+    });
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('5 minutos');
+    expect(el.textContent).toContain('30 minutos');
+  });
+
+  it('should dispatch weatherUpdateIntervalChanged when picking another interval', () => {
+    dispatchSpy.mockClear();
+    const cmp = fixture.componentInstance as unknown as {
+      setUpdateInterval(intervalMs: number): void;
+    };
+    cmp.setUpdateInterval(600_000);
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      weatherActions.weatherUpdateIntervalChanged({ intervalMs: 600_000 }),
+    );
+  });
+
+  it('should not dispatch weatherUpdateIntervalChanged when interval unchanged', () => {
+    dispatchSpy.mockClear();
+    const cmp = fixture.componentInstance as unknown as {
+      setUpdateInterval(intervalMs: number): void;
+    };
+    cmp.setUpdateInterval(300_000);
+    expect(dispatchSpy).not.toHaveBeenCalled();
+  });
+
   it('should show offline banner when connectivity is offline', async () => {
     await TestBed.resetTestingModule();
     await TestBed.configureTestingModule({

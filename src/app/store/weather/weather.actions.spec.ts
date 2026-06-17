@@ -57,9 +57,15 @@ describe('weatherActions', () => {
       favoritesCities: {},
       visualizationMode: 'detailed',
       locale: 'es',
+      weatherUpdateTimeInterval: 300_000,
     });
     expect(h.visualizationMode).toBe('detailed');
     expect(h.locale).toBe('es');
+    expect(h.weatherUpdateTimeInterval).toBe(300_000);
+  });
+
+  it('creates weatherUpdateIntervalChanged', () => {
+    expect(weatherActions.weatherUpdateIntervalChanged({ intervalMs: 600_000 }).intervalMs).toBe(600_000);
   });
 
   it('creates localeChanged and recentCitiesRootsUpdated', () => {

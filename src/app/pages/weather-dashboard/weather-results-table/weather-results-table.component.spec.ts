@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 
 import { weatherActions } from '../../../store/weather/weather.actions';
-import { mockWeatherRoot } from '../../../store/weather/weather-test-fixtures';
+import { mockRecentCity, mockWeatherRoot } from '../../../store/weather/weather-test-fixtures';
 import { initialWeatherState, RECENT_CITIES_PAGE_SIZE, type RecentCity } from '../../../store/weather/weather.state';
 import { WeatherResultsTableComponent } from './weather-results-table.component';
 
@@ -11,20 +11,17 @@ describe('WeatherResultsTableComponent', () => {
   let store: MockStore;
   let dispatchSpy: ReturnType<typeof vi.spyOn>;
 
-  const row: RecentCity = {
+  const row = mockRecentCity({
     key: '40.7,-74',
     label: 'NYC, US',
-    root: mockWeatherRoot(),
-    updatedAt: 1,
-  };
+  });
 
   function makeRecentCity(index: number): RecentCity {
-    return {
+    return mockRecentCity({
       key: `${index},${index}`,
       label: `City ${index}`,
-      root: mockWeatherRoot(),
       updatedAt: index,
-    };
+    });
   }
 
   beforeEach(async () => {

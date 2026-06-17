@@ -12,7 +12,7 @@ import { WeatherService } from '../../services/weather/weather.service';
 import type { SearchLocation } from '../../models/search-location.interface';
 import { weatherActions } from './weather.actions';
 import { WeatherEffects } from './weather.effects';
-import { mockWeatherRoot } from './weather-test-fixtures';
+import { mockRecentCity, mockWeatherRoot } from './weather-test-fixtures';
 import { initialWeatherState } from './weather.state';
 import * as weatherStorage from './weather.storage';
 
@@ -46,6 +46,7 @@ describe('WeatherEffects', () => {
     vi.spyOn(weatherStorage, 'writeFavoritesToStorage').mockImplementation(() => {});
     vi.spyOn(weatherStorage, 'writeVisualizationMode').mockImplementation(() => {});
     vi.spyOn(weatherStorage, 'writeLocaleToStorage').mockImplementation(() => {});
+    vi.spyOn(weatherStorage, 'writeWeatherUpdateIntervalToStorage').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -132,20 +133,37 @@ describe('WeatherEffects', () => {
 
   it('recentRowSelectedLoadsWeather emits loadCurrentWeather for known row', async () => {
     const effects = TestBed.inject(WeatherEffects);
-    const root = mockWeatherRoot();
-    const key = '40,-74';
+    const row = mockRecentCity({ lastUpdate: new Date(Date.now() - 600_000).toISOString() });
+    const key = row.key;
     store.setState({
       weather: {
         ...initialWeatherState,
-        recentCities: {
-          [key]: { key, label: 'NYC', root, updatedAt: 1 },
-        },
+        recentCities: { [key]: row },
       },
     });
     const emitted = firstValueFrom(effects.recentRowSelectedLoadsWeather$);
     actions$.next(weatherActions.recentRowSelected({ key }));
     const action = await emitted;
-    expect(action).toEqual(weatherActions.loadCurrentWeather({ q: key, label: 'NYC' }));
+    expect(action).toEqual(weatherActions.loadCurrentWeather({ q: key, label: row.label }));
+  });
+
+  it('recentRowSelectedLoadsWeather serves cache when interval not elapsed', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    const row = mockRecentCity({ lastUpdate: new Date().toISOString() });
+    const key = row.key;
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        recentCities: { [key]: row },
+      },
+    });
+    const emitted = firstValueFrom(effects.recentRowSelectedLoadsWeather$);
+    actions$.next(weatherActions.recentRowSelected({ key }));
+    const action = await emitted;
+    expect(weatherApi.getCurrent).not.toHaveBeenCalled();
+    expect(action).toEqual(
+      weatherActions.loadCurrentWeatherSuccess({ q: key, label: row.label, root: row.root }),
+    );
   });
 
   it('recentRowSelectedLoadsWeather ignores unknown key', async () => {
@@ -201,6 +219,32 @@ describe('WeatherEffects', () => {
     const action = await emitted;
     expect(weatherApi.getCurrent).toHaveBeenCalled();
     expect(action.type).toBe(weatherActions.loadCurrentWeatherSuccess.type);
+  });
+
+  it('loadCurrentWeather serves cache when interval not elapsed', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    const row = mockRecentCity({
+      key: '51.5,-0.1',
+      label: 'London, UK',
+      lastUpdate: new Date().toISOString(),
+    });
+    store.setState({
+      weather: {
+        ...initialWeatherState,
+        recentCities: { [row.key]: row },
+      },
+    });
+    const emitted = firstValueFrom(effects.loadCurrentWeather$);
+    actions$.next(weatherActions.loadCurrentWeather({ q: 'London', label: 'London, UK' }));
+    const action = await emitted;
+    expect(weatherApi.getCurrent).not.toHaveBeenCalled();
+    expect(action).toEqual(
+      weatherActions.loadCurrentWeatherSuccess({
+        q: row.key,
+        label: row.label,
+        root: row.root,
+      }),
+    );
   });
 
   it('loadCurrentWeather maps HTTP error to failure', async () => {
@@ -289,7 +333,7 @@ describe('WeatherEffects', () => {
         ...initialWeatherState,
         locale: 'es',
         recentCities: {
-          '40,-74': { key: '40,-74', label: 'NYC', root, updatedAt: 1 },
+          '40,-74': mockRecentCity(),
         },
         selectedKey: '40,-74',
         currentWeather: root,
@@ -325,7 +369,11 @@ describe('WeatherEffects', () => {
         ...initialWeatherState,
         searchText: sanitizeWeatherSearchInput('paris'),
         recentCities: {
-          '48.85,2.35': { key: '48.85,2.35', label: 'paris, france', root, updatedAt: 1 },
+          '48.85,2.35': mockRecentCity({
+            key: '48.85,2.35',
+            label: 'paris, france',
+            root,
+          }),
         },
       },
     });
@@ -367,7 +415,11 @@ describe('WeatherEffects', () => {
       weather: {
         ...initialWeatherState,
         recentCities: {
-          '48.85,2.35': { key: '48.85,2.35', label: 'paris, france', root, updatedAt: 1 },
+          '48.85,2.35': mockRecentCity({
+            key: '48.85,2.35',
+            label: 'paris, france',
+            root,
+          }),
         },
       },
     });
@@ -401,14 +453,12 @@ describe('WeatherEffects', () => {
   it('recentRowSelected serves cached weather when offline', async () => {
     isOnline.set(false);
     const effects = TestBed.inject(WeatherEffects);
-    const root = mockWeatherRoot();
-    const key = '40,-74';
+    const row = mockRecentCity();
+    const key = row.key;
     store.setState({
       weather: {
         ...initialWeatherState,
-        recentCities: {
-          [key]: { key, label: 'NYC', root, updatedAt: 1 },
-        },
+        recentCities: { [key]: row },
       },
     });
     const emitted = firstValueFrom(effects.recentRowSelectedLoadsWeather$);
@@ -416,7 +466,7 @@ describe('WeatherEffects', () => {
     const action = await emitted;
     expect(weatherApi.getCurrent).not.toHaveBeenCalled();
     expect(action).toEqual(
-      weatherActions.loadCurrentWeatherSuccess({ q: key, label: 'NYC', root }),
+      weatherActions.loadCurrentWeatherSuccess({ q: key, label: row.label, root: row.root }),
     );
   });
 
@@ -448,7 +498,7 @@ describe('WeatherEffects', () => {
       weather: {
         ...initialWeatherState,
         recentCities: {
-          '40,-74': { key: '40,-74', label: 'NYC', root, updatedAt: 1 },
+          '40,-74': mockRecentCity(),
         },
       },
     });
@@ -457,5 +507,13 @@ describe('WeatherEffects', () => {
     const action = await emitted;
     expect(weatherApi.getCurrent).not.toHaveBeenCalled();
     expect(action).toEqual(weatherActions.recentCitiesRootsUpdated({ updates: [] }));
+  });
+
+  it('persistWeatherUpdateInterval writes interval to storage', async () => {
+    const effects = TestBed.inject(WeatherEffects);
+    const done = firstValueFrom(effects.persistWeatherUpdateInterval$);
+    actions$.next(weatherActions.weatherUpdateIntervalChanged({ intervalMs: 600_000 }));
+    await done;
+    expect(weatherStorage.writeWeatherUpdateIntervalToStorage).toHaveBeenCalledWith(600_000);
   });
 });

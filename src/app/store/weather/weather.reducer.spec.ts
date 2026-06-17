@@ -69,6 +69,7 @@ describe('weather reducer', () => {
     expect(next.currentStatus).toBe('success');
     expect(next.selectedKey).toBe('40,-74');
     expect(next.recentCities['40,-74']?.label).toBe('NYC');
+    expect(next.recentCities['40,-74']?.lastUpdate).toBeTruthy();
   });
 
   it('loadCurrentWeatherFailure sets error', () => {
@@ -139,6 +140,28 @@ describe('weather reducer', () => {
     expect(next).toBe(initialWeatherState);
   });
 
+  it('weatherUpdateIntervalChanged updates interval', () => {
+    const next = reduce(
+      initialWeatherState,
+      weatherActions.weatherUpdateIntervalChanged({ intervalMs: 600_000 }),
+    );
+    expect(next.weatherUpdateTimeInterval).toBe(600_000);
+  });
+
+  it('loadCurrentWeatherSuccess syncs favorite lastUpdate', () => {
+    const root = mockWeatherRoot();
+    const fk = favoriteCityKey('NYC');
+    const state = {
+      ...initialWeatherState,
+      favoritesCities: { [fk]: { cityLabel: fk } },
+    };
+    const next = reduce(
+      state,
+      weatherActions.loadCurrentWeatherSuccess({ q: '40,-74', label: 'NYC', root }),
+    );
+    expect(next.favoritesCities[fk]?.lastUpdate).toBe(next.recentCities['40,-74']?.lastUpdate);
+  });
+
   it('hydrateFromLocalStorage merges persisted slices', () => {
     const recent = {} as typeof initialWeatherState.recentCities;
     const favorites = {} as typeof initialWeatherState.favoritesCities;
@@ -149,10 +172,12 @@ describe('weather reducer', () => {
         favoritesCities: favorites,
         visualizationMode: 'table',
         locale: 'es',
+        weatherUpdateTimeInterval: 900_000,
       }),
     );
     expect(next.visualizationMode).toBe('table');
     expect(next.locale).toBe('es');
+    expect(next.weatherUpdateTimeInterval).toBe(900_000);
     expect(next.recentCities).toBe(recent);
   });
 
