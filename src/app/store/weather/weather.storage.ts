@@ -11,6 +11,12 @@ import type {
   VisualizationMode,
 } from './weather.state';
 import { favoriteCityKey } from './weather.state';
+import {
+  normalizeWeatherUpdateInterval,
+  WEATHER_UPDATE_INTERVAL_STORAGE_KEY,
+  type WeatherUpdateIntervalMs,
+} from './weather-update-interval';
+import { createLastUpdateTimestamp } from '../../helpers/weather-refresh';
 
 const LS_RECENT = 'recent-cities';
 const LS_FAVORITES = 'favorite-cities';
@@ -22,7 +28,9 @@ function locationQueryKey(root: Root): string {
   return `${lat},${lon}`;
 }
 
-function isRecentCityShape(v: unknown): v is Pick<RecentCity, 'key' | 'label' | 'root'> & { updatedAt?: number } {
+function isRecentCityShape(
+  v: unknown,
+): v is Pick<RecentCity, 'key' | 'label' | 'root'> & { updatedAt?: number; lastUpdate?: string } {
   if (!v || typeof v !== 'object') return false;
   const o = v as Record<string, unknown>;
   return (
@@ -33,10 +41,27 @@ function isRecentCityShape(v: unknown): v is Pick<RecentCity, 'key' | 'label' | 
   );
 }
 
+function resolveLastUpdate(updatedAt?: number, lastUpdate?: string): string {
+  if (lastUpdate) {
+    const parsed = new Date(lastUpdate).getTime();
+    if (!Number.isNaN(parsed)) return lastUpdate;
+  }
+  if (typeof updatedAt === 'number' && !Number.isNaN(updatedAt)) {
+    return createLastUpdateTimestamp(updatedAt);
+  }
+  return createLastUpdateTimestamp();
+}
+
 export function serializeRecentCities(map: RecentCitiesMap): string {
-  const recentCities: Record<string, { city: string; weather: Root; updatedAt?: number }> = {};
+  const recentCities: Record<string, { city: string; weather: Root; updatedAt?: number; lastUpdate?: string }> =
+    {};
   for (const [k, row] of Object.entries(map)) {
-    recentCities[k] = { city: row.label, weather: row.root, updatedAt: row.updatedAt };
+    recentCities[k] = {
+      city: row.label,
+      weather: row.root,
+      updatedAt: row.updatedAt,
+      lastUpdate: row.lastUpdate,
+    };
   }
   return JSON.stringify({ recentCities });
 }
@@ -44,24 +69,32 @@ export function serializeRecentCities(map: RecentCitiesMap): string {
 function entryToRecentCity(outerKey: string, entry: unknown): RecentCity | null {
   if (!entry || typeof entry !== 'object') return null;
   if (isRecentCityShape(entry)) {
+    const updatedAt = typeof entry['updatedAt'] === 'number' ? entry['updatedAt'] : Date.now();
     return {
       key: entry['key'],
       label: entry['label'],
       root: entry['root'],
-      updatedAt: typeof entry['updatedAt'] === 'number' ? entry['updatedAt'] : Date.now(),
+      updatedAt,
+      lastUpdate: resolveLastUpdate(updatedAt, entry['lastUpdate']),
     };
   }
   const city = (entry as { city?: unknown }).city;
   const weather = (entry as { weather?: unknown }).weather;
   const updatedAt = (entry as { updatedAt?: unknown }).updatedAt;
+  const lastUpdate = (entry as { lastUpdate?: unknown }).lastUpdate;
   if (typeof city !== 'string' || !weather || typeof weather !== 'object') return null;
   const root = weather as Root;
   const key = outerKey || locationQueryKey(root);
+  const resolvedUpdatedAt = typeof updatedAt === 'number' ? updatedAt : Date.now();
   return {
     key,
     label: typeof city === 'string' ? cleanText(city) : city,
     root,
-    updatedAt: typeof updatedAt === 'number' ? updatedAt : Date.now(),
+    updatedAt: resolvedUpdatedAt,
+    lastUpdate: resolveLastUpdate(
+      resolvedUpdatedAt,
+      typeof lastUpdate === 'string' ? lastUpdate : undefined,
+    ),
   };
 }
 
@@ -134,9 +167,13 @@ export function parseFavorites(raw: string | null): FavoriteCitiesMap {
     for (const [, entry] of Object.entries(fav as Record<string, unknown>)) {
       if (entry && typeof entry === 'object' && 'cityLabel' in entry) {
         const cl = (entry as FavoriteCity).cityLabel;
+        const lastUpdate = (entry as FavoriteCity).lastUpdate;
         if (typeof cl === 'string' && cl.trim()) {
           const k = favoriteCityKey(cl);
-          map[k] = { cityLabel: k };
+          map[k] = {
+            cityLabel: k,
+            ...(typeof lastUpdate === 'string' ? { lastUpdate } : {}),
+          };
         }
       } else if (typeof entry === 'string' && entry.trim()) {
         const k = favoriteCityKey(entry);
@@ -193,4 +230,19 @@ export function readLocaleFromStorage(): AppLocale {
 export function writeLocaleToStorage(locale: AppLocale): void {
   if (typeof localStorage === 'undefined') return;
   localStorage.setItem(LS_LOCALE, locale);
+}
+
+export function readWeatherUpdateIntervalFromStorage(): WeatherUpdateIntervalMs {
+  if (typeof localStorage === 'undefined') {
+    return normalizeWeatherUpdateInterval(undefined);
+  }
+  const raw = localStorage.getItem(WEATHER_UPDATE_INTERVAL_STORAGE_KEY);
+  if (raw === null) return normalizeWeatherUpdateInterval(undefined);
+  const parsed = Number(raw);
+  return normalizeWeatherUpdateInterval(Number.isNaN(parsed) ? undefined : parsed);
+}
+
+export function writeWeatherUpdateIntervalToStorage(intervalMs: WeatherUpdateIntervalMs): void {
+  if (typeof localStorage === 'undefined') return;
+  localStorage.setItem(WEATHER_UPDATE_INTERVAL_STORAGE_KEY, String(intervalMs));
 }

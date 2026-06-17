@@ -21,6 +21,7 @@ import {
   readLocaleFromStorage,
   readRecentCitiesFromStorage,
   readVisualizationMode,
+  readWeatherUpdateIntervalFromStorage,
 } from './store/weather/weather.storage';
 
 export const appConfig: ApplicationConfig = {
@@ -49,6 +50,7 @@ export const appConfig: ApplicationConfig = {
           favoritesCities: readFavoritesFromStorage(),
           visualizationMode: readVisualizationMode(),
           locale,
+          weatherUpdateTimeInterval: readWeatherUpdateIntervalFromStorage(),
         }),
       );
     }),

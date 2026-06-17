@@ -148,6 +148,35 @@
   color: #64748b;
 }
 
+.interval-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.interval-selector__btn {
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+
+  &--active {
+    background: #0f172a;
+    color: #fff;
+    border-color: #0f172a;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
+}
+
 .view-toggle {
   display: flex;
   gap: 0.5rem;

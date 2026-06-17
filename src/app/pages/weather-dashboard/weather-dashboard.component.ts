@@ -10,6 +10,10 @@ import { I18nPipe } from '../../i18n/i18n.pipe';
 import type { SearchLocation } from '../../models/search-location.interface';
 import { weatherActions } from '../../store/weather/weather.actions';
 import { weatherFeature } from '../../store/weather/weather.reducer';
+import {
+  WEATHER_UPDATE_INTERVAL_OPTIONS,
+  type WeatherUpdateIntervalMs,
+} from '../../store/weather/weather-update-interval';
 import { ConnectivityService } from '../../services/connectivity/connectivity.service';
 import { WeatherDetailPanelComponent } from './weather-detail-panel/weather-detail-panel.component';
 import { WeatherFavoritesListComponent } from './weather-favorites-list/weather-favorites-list.component';
@@ -37,6 +41,10 @@ export class WeatherDashboardComponent {
   protected readonly weatherError = this.store.selectSignal(weatherFeature.selectCurrentError);
   protected readonly visualizationMode = this.store.selectSignal(weatherFeature.selectVisualizationMode);
   protected readonly locale = this.store.selectSignal(weatherFeature.selectLocale);
+  protected readonly weatherUpdateInterval = this.store.selectSignal(
+    weatherFeature.selectWeatherUpdateTimeInterval,
+  );
+  protected readonly intervalOptions = WEATHER_UPDATE_INTERVAL_OPTIONS;
 
   protected loadingWeather(): boolean {
     return this.currentStatus() === 'loading';
@@ -73,5 +81,10 @@ export class WeatherDashboardComponent {
   protected setLocale(locale: AppLocale): void {
     if (this.locale() === locale) return;
     this.store.dispatch(weatherActions.localeChanged({ locale }));
+  }
+
+  protected setUpdateInterval(intervalMs: WeatherUpdateIntervalMs): void {
+    if (this.weatherUpdateInterval() === intervalMs) return;
+    this.store.dispatch(weatherActions.weatherUpdateIntervalChanged({ intervalMs }));
   }
 }

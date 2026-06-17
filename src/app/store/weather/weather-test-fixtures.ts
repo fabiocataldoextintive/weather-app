@@ -1,4 +1,6 @@
 import type { Root } from '../../models/root.interface';
+import { createLastUpdateTimestamp } from '../../helpers/weather-refresh';
+import type { RecentCity } from './weather.state';
 
 /** Minimal valid `Root` for store tests. */
 export function mockWeatherRoot(overrides?: Partial<Root>): Root {
@@ -40,5 +42,18 @@ export function mockWeatherRoot(overrides?: Partial<Root>): Root {
       gust_kph: 0,
       ...overrides?.current,
     },
+  };
+}
+
+/** Recent history row for store/effect tests. */
+export function mockRecentCity(overrides?: Partial<RecentCity>): RecentCity {
+  const updatedAt = overrides?.updatedAt ?? 1;
+  return {
+    key: '40,-74',
+    label: 'NYC',
+    root: mockWeatherRoot(),
+    updatedAt,
+    lastUpdate: createLastUpdateTimestamp(updatedAt),
+    ...overrides,
   };
 }
