@@ -66,6 +66,24 @@
     }
   </section>
 
+  <div
+    class="interval-selector"
+    role="group"
+    [attr.aria-label]="'dashboard.refreshInterval' | i18n"
+  >
+    @for (option of intervalOptions; track option.value) {
+      <button
+        type="button"
+        class="interval-selector__btn"
+        [class.interval-selector__btn--active]="weatherUpdateInterval() === option.value"
+        [attr.aria-pressed]="weatherUpdateInterval() === option.value"
+        (click)="setUpdateInterval(option.value)"
+      >
+        {{ option.labelKey | i18n }}
+      </button>
+    }
+  </div>
+
   <app-weather-favorites-list />
 
   <div class="view-toggle" role="group" [attr.aria-label]="'dashboard.viewToggle' | i18n">

@@ -1,4 +1,4 @@
-import { mockWeatherRoot } from './weather-test-fixtures';
+import { mockRecentCity, mockWeatherRoot } from './weather-test-fixtures';
 import {
   favoriteCityKey,
   favoritesCitiesOrdered,
@@ -23,18 +23,8 @@ describe('weather.state helpers', () => {
 
   describe('recentCitiesOrdered', () => {
     it('sorts by updatedAt descending', () => {
-      const a: RecentCity = {
-        key: 'a',
-        label: 'A',
-        root: mockWeatherRoot(),
-        updatedAt: 100,
-      };
-      const b: RecentCity = {
-        key: 'b',
-        label: 'B',
-        root: mockWeatherRoot(),
-        updatedAt: 200,
-      };
+      const a = mockRecentCity({ key: 'a', label: 'A', updatedAt: 100 });
+      const b = mockRecentCity({ key: 'b', label: 'B', updatedAt: 200 });
       const map: RecentCitiesMap = { a, b };
       expect(recentCitiesOrdered(map).map((r) => r.key)).toEqual(['b', 'a']);
     });
@@ -52,9 +42,11 @@ describe('weather.state helpers', () => {
 
   describe('findRecentCityForFavorite', () => {
     it('finds history row by favorite label', () => {
-      const root = mockWeatherRoot();
       const map: RecentCitiesMap = {
-        '48.85,2.35': { key: '48.85,2.35', label: 'paris, france', root, updatedAt: 1 },
+        '48.85,2.35': mockRecentCity({
+          key: '48.85,2.35',
+          label: 'paris, france',
+        }),
       };
       expect(findRecentCityForFavorite(map, 'paris, france')?.key).toBe('48.85,2.35');
     });
@@ -64,5 +56,6 @@ describe('weather.state helpers', () => {
     expect(initialWeatherState.searchText).toBe('');
     expect(initialWeatherState.visualizationMode).toBe('detailed');
     expect(initialWeatherState.currentStatus).toBe('idle');
+    expect(initialWeatherState.weatherUpdateTimeInterval).toBe(300_000);
   });
 });

@@ -19,6 +19,7 @@
 - Empty autocomplete (`search.json` returns `[]` for valid query) → `searchValidationFailed` with `err.noCitySuggestions` (shown under search input)
 - View toggle: table vs detailed (`visualizationModeChanged`)
 - **Language selector** (header, top-right): English / Spanish segmented control → `localeChanged`; persists to `localStorage` key `app-locale`
+- **Refresh interval selector** (below city search): 5 / 10 / 15 / 30 min buttons → `weatherUpdateIntervalChanged`; persists to `weather-update-interval`; labels via `I18nPipe` (`interval.5min` … `interval.30min`)
 - **Offline banner** when `ConnectivityService.isOnline()` is false (`err.offlineBanner`)
 - Loading and error banners driven by `currentStatus` / `currentError`
 - Embeds **`WeatherFavoritesListComponent`** (always visible below search)
@@ -75,8 +76,9 @@
 
 | File | Role |
 |------|------|
-| `weather.state.ts` | State interface, `initialWeatherState`, `MIN_SEARCH_QUERY_LEN`, `RECENT_CITIES_PAGE_SIZE`, `favoriteCityKey`, `recentCitiesOrdered` |
-| `weather.actions.ts` | `createActionGroup` — search, load, favorites, hydration |
+| `weather.state.ts` | State interface, `initialWeatherState`, `MIN_SEARCH_QUERY_LEN`, `RECENT_CITIES_PAGE_SIZE`, `favoriteCityKey`, `recentCitiesOrdered`; `RecentCity.lastUpdate`, `FavoriteCity.lastUpdate?` |
+| `weather-update-interval.ts` | Allowed intervals, option model, `normalizeWeatherUpdateInterval` |
+| `weather.actions.ts` | `createActionGroup` — search, load, favorites, hydration, `weatherUpdateIntervalChanged` |
 | `weather.reducer.ts` | Pure transitions + `weatherFeature` |
 | `weather.effects.ts` | Side effects: API, debounce, persistence |
 | `weather.storage.ts` | `localStorage` serialization with backward-compatible parsers |
@@ -87,7 +89,7 @@
 
 - **Search:** `searchInputChanged`, `suggestionsResolved`, `dismissSuggestions`, `suggestionPicked`, `searchValidationFailed`, `clearSearchValidation`
 - **Weather load:** `loadCurrentWeather`, `loadCurrentWeatherSuccess`, `loadCurrentWeatherFailure`
-- **UX:** `recentRowSelected`, `favoriteSelected`, `visualizationModeChanged`, `favoriteCityToggled`, `localeChanged`
+- **UX:** `recentRowSelected`, `favoriteSelected`, `visualizationModeChanged`, `favoriteCityToggled`, `localeChanged`, `weatherUpdateIntervalChanged`
 - **Init:** `hydrateFromLocalStorage`
 
 ## Helpers
@@ -95,6 +97,7 @@
 | File | Purpose |
 |------|---------|
 | `helpers/weather-search-query.ts` | `sanitizeWeatherSearchInput`, `countLettersAndDigits` (min length 2 for API) |
+| `helpers/weather-refresh.ts` | `lastUpdateToMs`, `isWeatherRefreshDue`, `createLastUpdateTimestamp` — interval gating helpers |
 | `helpers/search-stored-cities.ts` | Offline autocomplete against saved favorites/history by city name |
 | `helpers/clean-text.ts` | Normalize labels for display and favorite keys (NFD, strip accents) |
 
@@ -125,6 +128,6 @@ Interfaces aligned with WeatherAPI JSON:
 ## Tests (by area)
 
 - **Service:** `weather.service.spec.ts`
-- **Store:** `weather.state.spec.ts`, `weather.reducer.spec.ts`, `weather.actions.spec.ts`, `weather.effects.spec.ts`, `weather.storage.spec.ts`, `weather-user-message.spec.ts`
-- **Helpers:** `weather-search-query.spec.ts`, `clean-text.spec.ts`
+- **Store:** `weather.state.spec.ts`, `weather.reducer.spec.ts`, `weather.actions.spec.ts`, `weather.effects.spec.ts`, `weather.storage.spec.ts`, `weather-user-message.spec.ts`, `weather-update-interval.spec.ts`
+- **Helpers:** `weather-search-query.spec.ts`, `weather-refresh.spec.ts`, `clean-text.spec.ts`, `search-stored-cities.spec.ts`
 - **Components:** dashboard, detail panel, results table, current-weather-card specs

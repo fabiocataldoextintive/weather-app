@@ -4,6 +4,7 @@ import type { AppLocale } from '../../i18n/app-locale';
 import type { Root } from '../../models/root.interface';
 import type { SearchLocation } from '../../models/search-location.interface';
 import type { FavoriteCitiesMap, RecentCitiesMap, VisualizationMode } from './weather.state';
+import type { WeatherUpdateIntervalMs } from './weather-update-interval';
 
 export const weatherActions = createActionGroup({
   source: 'Weather',
@@ -27,6 +28,7 @@ export const weatherActions = createActionGroup({
     favoriteSelected: props<{ cityLabel: string }>(),
 
     localeChanged: props<{ locale: AppLocale }>(),
+    weatherUpdateIntervalChanged: props<{ intervalMs: WeatherUpdateIntervalMs }>(),
     recentCitiesRootsUpdated: props<{ updates: { key: string; root: Root }[] }>(),
 
     hydrateFromLocalStorage: props<{
@@ -34,6 +36,7 @@ export const weatherActions = createActionGroup({
       favoritesCities: FavoriteCitiesMap;
       visualizationMode: VisualizationMode;
       locale: AppLocale;
+      weatherUpdateTimeInterval: WeatherUpdateIntervalMs;
     }>(),
   },
 });

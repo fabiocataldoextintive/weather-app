@@ -17,6 +17,11 @@ export type MessageId =
   | 'dashboard.langToggle'
   | 'dashboard.langEn'
   | 'dashboard.langEs'
+  | 'dashboard.refreshInterval'
+  | 'interval.5min'
+  | 'interval.10min'
+  | 'interval.15min'
+  | 'interval.30min'
   | 'detail.section'
   | 'detail.emptyHint'
   | 'favorites.section'
@@ -63,6 +68,11 @@ export const MESSAGES: Record<AppLocale, MessageCatalog> = {
     'dashboard.langToggle': 'Language',
     'dashboard.langEn': 'English',
     'dashboard.langEs': 'Spanish',
+    'dashboard.refreshInterval': 'Refresh interval',
+    'interval.5min': '5 minutes',
+    'interval.10min': '10 minutes',
+    'interval.15min': '15 minutes',
+    'interval.30min': '30 minutes',
     'detail.section': 'Detailed weather',
     'detail.emptyHint': 'Search for a city to see the forecast.',
     'favorites.section': 'Favorite cities',
@@ -107,6 +117,11 @@ export const MESSAGES: Record<AppLocale, MessageCatalog> = {
     'dashboard.langToggle': 'Idioma',
     'dashboard.langEn': 'Inglés',
     'dashboard.langEs': 'Español',
+    'dashboard.refreshInterval': 'Intervalo de actualización',
+    'interval.5min': '5 minutos',
+    'interval.10min': '10 minutos',
+    'interval.15min': '15 minutos',
+    'interval.30min': '30 minutos',
     'detail.section': 'Tiempo detallado',
     'detail.emptyHint': 'Busca una ciudad para ver la previsión.',
     'favorites.section': 'Ciudades favoritas',

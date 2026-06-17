@@ -2,6 +2,7 @@ import type { AppLocale } from '../../i18n/app-locale';
 import type { Root } from '../../models/root.interface';
 import type { SearchLocation } from '../../models/search-location.interface';
 import { cleanText } from '../../helpers/clean-text';
+import { DEFAULT_WEATHER_UPDATE_INTERVAL_MS, type WeatherUpdateIntervalMs } from './weather-update-interval';
 
 export const MIN_SEARCH_QUERY_LEN = 2;
 export const RECENT_CITIES_PAGE_SIZE = 25;
@@ -11,10 +12,12 @@ export interface RecentCity {
   label: string;
   root: Root;
   updatedAt: number;
+  lastUpdate: string;
 }
 
 export interface FavoriteCity {
   cityLabel: string;
+  lastUpdate?: string;
 }
 
 export type RecentCitiesMap = Record<string, RecentCity>;
@@ -38,6 +41,7 @@ export interface WeatherState {
   favoritesCities: FavoriteCitiesMap;
   visualizationMode: VisualizationMode;
   locale: AppLocale;
+  weatherUpdateTimeInterval: WeatherUpdateIntervalMs;
 }
 
 export const initialWeatherState: WeatherState = {
@@ -56,6 +60,7 @@ export const initialWeatherState: WeatherState = {
   favoritesCities: {},
   visualizationMode: 'detailed',
   locale: 'en',
+  weatherUpdateTimeInterval: DEFAULT_WEATHER_UPDATE_INTERVAL_MS,
 };
 
 /** Normalized key for favorites map (lowercase, no accents, safe chars). */

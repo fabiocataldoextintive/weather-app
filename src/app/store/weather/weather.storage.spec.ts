@@ -7,12 +7,14 @@ import {
   readLocaleFromStorage,
   readRecentCitiesFromStorage,
   readVisualizationMode,
+  readWeatherUpdateIntervalFromStorage,
   serializeFavorites,
   serializeRecentCities,
   writeFavoritesToStorage,
   writeLocaleToStorage,
   writeRecentCitiesToStorage,
   writeVisualizationMode,
+  writeWeatherUpdateIntervalToStorage,
 } from './weather.storage';
 
 describe('weather.storage', () => {
@@ -26,6 +28,7 @@ describe('weather.storage', () => {
           label: 'nyc, us',
           root,
           updatedAt: 99,
+          lastUpdate: new Date(99).toISOString(),
         },
       };
       const json = serializeRecentCities(map);
@@ -57,12 +60,23 @@ describe('weather.storage', () => {
     it('parses native recent entries with key, label, root', () => {
       const raw = JSON.stringify({
         recentCities: {
-          k1: { key: 'k1', label: 'Native', root, updatedAt: 42 },
+          k1: { key: 'k1', label: 'Native', root, updatedAt: 42, lastUpdate: '2024-01-01T00:00:00.000Z' },
         },
       });
       const map = parseRecentCities(raw);
       expect(map.k1?.label).toBe('Native');
       expect(map.k1?.updatedAt).toBe(42);
+      expect(map.k1?.lastUpdate).toBe('2024-01-01T00:00:00.000Z');
+    });
+
+    it('derives lastUpdate from updatedAt when missing', () => {
+      const raw = JSON.stringify({
+        recentCities: {
+          k1: { key: 'k1', label: 'Native', root, updatedAt: 42 },
+        },
+      });
+      const map = parseRecentCities(raw);
+      expect(map.k1?.lastUpdate).toBe(new Date(42).toISOString());
     });
 
     it('returns {} on invalid JSON', () => {
@@ -72,7 +86,15 @@ describe('weather.storage', () => {
   });
 
   describe('serializeFavorites / parseFavorites', () => {
-    it('round-trips favorites map', () => {
+    it('round-trips favorites map with lastUpdate', () => {
+      const map: FavoriteCitiesMap = {
+        paris: { cityLabel: 'paris', lastUpdate: '2024-06-01T12:00:00.000Z' },
+      };
+      const back = parseFavorites(serializeFavorites(map));
+      expect(back.paris).toEqual(map.paris);
+    });
+
+    it('round-trips favorites map without lastUpdate', () => {
       const map: FavoriteCitiesMap = { paris: { cityLabel: 'paris' } };
       const back = parseFavorites(serializeFavorites(map));
       expect(back.paris).toEqual({ cityLabel: 'paris' });
@@ -162,6 +184,19 @@ describe('weather.storage', () => {
       writeLocaleToStorage('en');
       expect(readLocaleFromStorage()).toBe('en');
     });
+
+    it('readWeatherUpdateIntervalFromStorage defaults and falls back', () => {
+      expect(readWeatherUpdateIntervalFromStorage()).toBe(300_000);
+      localStorage.setItem('weather-update-interval', '600000');
+      expect(readWeatherUpdateIntervalFromStorage()).toBe(600_000);
+      localStorage.setItem('weather-update-interval', '999');
+      expect(readWeatherUpdateIntervalFromStorage()).toBe(300_000);
+    });
+
+    it('writeWeatherUpdateIntervalToStorage persists allowed value', () => {
+      writeWeatherUpdateIntervalToStorage(900_000);
+      expect(localStorage.getItem('weather-update-interval')).toBe('900000');
+    });
   });
 
   describe('when global localStorage is unavailable', () => {
@@ -181,6 +216,7 @@ describe('weather.storage', () => {
       expect(readRecentCitiesFromStorage()).toEqual({});
       expect(readFavoritesFromStorage()).toEqual({});
       expect(readLocaleFromStorage()).toBe('en');
+      expect(readWeatherUpdateIntervalFromStorage()).toBe(300_000);
     });
 
     it('write helpers no-op without throwing', () => {
@@ -189,6 +225,7 @@ describe('weather.storage', () => {
         writeRecentCitiesToStorage({});
         writeFavoritesToStorage({});
         writeLocaleToStorage('es');
+        writeWeatherUpdateIntervalToStorage(600_000);
       }).not.toThrow();
     });
   });
