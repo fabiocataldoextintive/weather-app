@@ -19,7 +19,7 @@
 - Empty autocomplete (`search.json` returns `[]` for valid query) → `searchValidationFailed` with `err.noCitySuggestions` (shown under search input)
 - View toggle: table vs detailed (`visualizationModeChanged`)
 - **Language selector** (header, top-right): English / Spanish segmented control → `localeChanged`; persists to `localStorage` key `app-locale`
-- **Refresh interval selector** (below city search): 5 / 10 / 15 / 30 min buttons → `weatherUpdateIntervalChanged`; persists to `weather-update-interval`; labels via `I18nPipe` (`interval.5min` … `interval.30min`)
+- **Refresh interval selector** (below city search): prefix label `dashboard.refreshEvery` (**Refresh every** / **Actualizar cada**) left of 5 / 10 / 15 / 30 min buttons → `weatherUpdateIntervalChanged`; persists to `weather-update-interval`; option labels via `I18nPipe` (`interval.5min` … `interval.30min`)
 - **Offline banner** when `ConnectivityService.isOnline()` is false (`err.offlineBanner`)
 - Loading and error banners driven by `currentStatus` / `currentError`
 - Embeds **`WeatherFavoritesListComponent`** (always visible below search)

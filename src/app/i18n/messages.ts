@@ -18,6 +18,7 @@ export type MessageId =
   | 'dashboard.langEn'
   | 'dashboard.langEs'
   | 'dashboard.refreshInterval'
+  | 'dashboard.refreshEvery'
   | 'interval.5min'
   | 'interval.10min'
   | 'interval.15min'
@@ -69,6 +70,7 @@ export const MESSAGES: Record<AppLocale, MessageCatalog> = {
     'dashboard.langEn': 'English',
     'dashboard.langEs': 'Spanish',
     'dashboard.refreshInterval': 'Refresh interval',
+    'dashboard.refreshEvery': 'Refresh every',
     'interval.5min': '5 minutes',
     'interval.10min': '10 minutes',
     'interval.15min': '15 minutes',
@@ -118,6 +120,7 @@ export const MESSAGES: Record<AppLocale, MessageCatalog> = {
     'dashboard.langEn': 'Inglés',
     'dashboard.langEs': 'Español',
     'dashboard.refreshInterval': 'Intervalo de actualización',
+    'dashboard.refreshEvery': 'Actualizar cada',
     'interval.5min': '5 minutos',
     'interval.10min': '10 minutos',
     'interval.15min': '15 minutos',

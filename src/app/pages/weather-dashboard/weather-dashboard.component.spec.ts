@@ -235,6 +235,23 @@ describe('WeatherDashboardComponent', () => {
     expect(buttons[3]?.textContent).toContain('30 minutes');
   });
 
+  it('should show English refresh prefix label to the left of interval buttons', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    const prefix = el.querySelector('.interval-selector__prefix');
+    const buttons = el.querySelectorAll('.interval-selector__btn');
+    expect(prefix?.textContent?.trim()).toBe('Refresh every');
+    expect(prefix?.compareDocumentPosition(buttons[0]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('should show Spanish refresh prefix label when locale is es', () => {
+    store.setState({
+      weather: { ...initialWeatherState, locale: 'es' },
+    });
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.interval-selector__prefix')?.textContent?.trim()).toBe('Actualizar cada');
+  });
+
   it('should show Spanish interval labels when locale is es', () => {
     store.setState({
       weather: { ...initialWeatherState, locale: 'es' },
