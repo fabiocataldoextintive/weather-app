@@ -1,11 +1,11 @@
 import type { MessageId } from '../../i18n/messages';
 
 /** Allowed refresh intervals in milliseconds (ascending). */
-export const WEATHER_UPDATE_INTERVALS_MS = [300_000, 600_000, 900_000, 1_800_000] as const;
+export const WEATHER_UPDATE_INTERVALS_MS = [300000, 600000, 900000, 1800000];
 
 export type WeatherUpdateIntervalMs = (typeof WEATHER_UPDATE_INTERVALS_MS)[number];
 
-export const DEFAULT_WEATHER_UPDATE_INTERVAL_MS: WeatherUpdateIntervalMs = 300_000;
+export const DEFAULT_WEATHER_UPDATE_INTERVAL_MS: WeatherUpdateIntervalMs = 300000;
 
 export const WEATHER_UPDATE_INTERVAL_STORAGE_KEY = 'weather-update-interval';
 
@@ -16,10 +16,10 @@ export interface WeatherUpdateIntervalOption {
 
 /** Options in ascending order (5, 10, 15, 30 min). */
 export const WEATHER_UPDATE_INTERVAL_OPTIONS: readonly WeatherUpdateIntervalOption[] = [
-  { labelKey: 'interval.5min', value: 300_000 },
-  { labelKey: 'interval.10min', value: 600_000 },
-  { labelKey: 'interval.15min', value: 900_000 },
-  { labelKey: 'interval.30min', value: 1_800_000 },
+  { labelKey: 'interval.5min', value: 300000 },
+  { labelKey: 'interval.10min', value: 600000 },
+  { labelKey: 'interval.15min', value: 900000 },
+  { labelKey: 'interval.30min', value: 1800000 },
 ];
 
 export function isAllowedWeatherUpdateInterval(value: number): value is WeatherUpdateIntervalMs {
