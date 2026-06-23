@@ -86,7 +86,7 @@ describe('WeatherDashboardComponent', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(
       weatherActions.suggestionPicked({
         q: `${sampleLocation.lat},${sampleLocation.lon}`,
-        label: 'paris, france',
+        label: 'Paris, France',
       }),
     );
   });
@@ -103,7 +103,7 @@ describe('WeatherDashboardComponent', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(
       weatherActions.suggestionPicked({
         q: 'paris, france',
-        label: 'paris, france',
+        label: 'Paris, France',
       }),
     );
   });
@@ -120,7 +120,7 @@ describe('WeatherDashboardComponent', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(
       weatherActions.suggestionPicked({
         q: '48.85,2.35',
-        label: 'paris, france',
+        label: 'Paris, France',
       }),
     );
   });
@@ -153,7 +153,7 @@ describe('WeatherDashboardComponent', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(
       weatherActions.suggestionPicked({
         q: `${sampleLocation.lat},${sampleLocation.lon}`,
-        label: 'paris, france',
+        label: 'Paris, France',
       }),
     );
   });

@@ -15,6 +15,7 @@
 
 - Search input bound to store (`searchText`) via `FormsModule`
 - Autocomplete list from `suggestions` / `showSuggestions`
+- On suggestion pick, `searchText` uses API capitalization (`loc.name`, `loc.country`) — not `cleanText` (INT-32)
 - Keyboard: `Escape` dismisses suggestions; `Enter` picks first suggestion
 - Empty autocomplete (`search.json` returns `[]` for valid query) → `searchValidationFailed` with `err.noCitySuggestions` (shown under search input)
 - View toggle: table vs detailed (`visualizationModeChanged`)
@@ -79,7 +80,7 @@
 | `weather.state.ts` | State interface, `initialWeatherState`, `MIN_SEARCH_QUERY_LEN`, `RECENT_CITIES_PAGE_SIZE`, `favoriteCityKey`, `recentCitiesOrdered`; `RecentCity.lastUpdate`, `FavoriteCity.lastUpdate?` |
 | `weather-update-interval.ts` | Allowed intervals, option model, `normalizeWeatherUpdateInterval` |
 | `weather.actions.ts` | `createActionGroup` — search, load, favorites, hydration, `weatherUpdateIntervalChanged` |
-| `weather.reducer.ts` | Pure transitions + `weatherFeature` |
+| `weather.reducer.ts` | Pure transitions + `weatherFeature`; `loadCurrentWeatherSuccess` sets `searchText` / `activeLocationLabel` from `root.location` (INT-32) |
 | `weather.effects.ts` | Side effects: API, debounce, persistence |
 | `weather.storage.ts` | `localStorage` serialization with backward-compatible parsers |
 | `weather-user-message.ts` | Maps API/HTTP errors to localized user strings |
