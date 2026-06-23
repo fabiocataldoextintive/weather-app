@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
-import { cleanText } from '../../helpers/clean-text';
 import { parseOfflinePick } from '../../helpers/search-stored-cities';
 import type { AppLocale } from '../../i18n/app-locale';
 import { I18nPipe } from '../../i18n/i18n.pipe';
@@ -57,7 +56,7 @@ export class WeatherDashboardComponent {
   protected pickLocation(loc: SearchLocation): void {
     const offlineQ = parseOfflinePick(loc.url);
     const q = offlineQ ?? `${loc.lat},${loc.lon}`;
-    const label = cleanText(loc.country ? `${loc.name}, ${loc.country}` : loc.name);
+    const label = loc.country ? `${loc.name}, ${loc.country}` : loc.name;
     this.store.dispatch(weatherActions.suggestionPicked({ q, label }));
   }
 

@@ -12,6 +12,10 @@ import {
   type WeatherState,
 } from './weather.state';
 
+function locationDisplayLabel(name: string, country: string): string {
+  return country ? `${name}, ${country}` : name;
+}
+
 function upsertRecentMap(state: WeatherState, key: string, label: string, root: Root): RecentCitiesMap {
   const now = Date.now();
   const lastUpdate = createLastUpdateTimestamp(now);
@@ -71,7 +75,8 @@ const weatherReducer = createReducer(
     activeLocationLabel: null,
   })),
   on(weatherActions.loadCurrentWeatherSuccess, (state, { q, label, root }) => {
-    const recentCities = upsertRecentMap(state, q, label, root);
+    const displayLabel = locationDisplayLabel(root.location.name, root.location.country);
+    const recentCities = upsertRecentMap(state, q, displayLabel, root);
     const row = recentCities[q];
     const lastUpdate = row?.lastUpdate ?? createLastUpdateTimestamp();
     return {
@@ -80,9 +85,10 @@ const weatherReducer = createReducer(
       currentWeather: root,
       currentError: null,
       selectedKey: q,
-      activeLocationLabel: label,
+      activeLocationLabel: displayLabel,
+      searchText: displayLabel,
       recentCities,
-      favoritesCities: syncFavoriteLastUpdate(state.favoritesCities, label, lastUpdate),
+      favoritesCities: syncFavoriteLastUpdate(state.favoritesCities, displayLabel, lastUpdate),
     };
   }),
   on(weatherActions.loadCurrentWeatherFailure, (state, { userMessage }) => ({

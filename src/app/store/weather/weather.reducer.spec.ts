@@ -68,7 +68,9 @@ describe('weather reducer', () => {
     );
     expect(next.currentStatus).toBe('success');
     expect(next.selectedKey).toBe('40,-74');
-    expect(next.recentCities['40,-74']?.label).toBe('NYC');
+    expect(next.searchText).toBe('Test City, TC');
+    expect(next.activeLocationLabel).toBe('Test City, TC');
+    expect(next.recentCities['40,-74']?.label).toBe('Test City, TC');
     expect(next.recentCities['40,-74']?.lastUpdate).toBeTruthy();
   });
 
@@ -150,7 +152,7 @@ describe('weather reducer', () => {
 
   it('loadCurrentWeatherSuccess syncs favorite lastUpdate', () => {
     const root = mockWeatherRoot();
-    const fk = favoriteCityKey('NYC');
+    const fk = favoriteCityKey('Test City, TC');
     const state = {
       ...initialWeatherState,
       favoritesCities: { [fk]: { cityLabel: fk } },
