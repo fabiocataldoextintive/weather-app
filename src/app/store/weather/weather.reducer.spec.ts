@@ -74,6 +74,15 @@ describe('weather reducer', () => {
     expect(next.recentCities['40,-74']?.lastUpdate).toBeTruthy();
   });
 
+  it('loadCurrentWeatherSuccess includes region in display label', () => {
+    const root = mockWeatherRoot({ location: { region: 'Cordoba' } });
+    const next = reduce(
+      initialWeatherState,
+      weatherActions.loadCurrentWeatherSuccess({ q: '40,-74', label: 'x', root }),
+    );
+    expect(next.searchText).toBe('Test City, Cordoba, TC');
+  });
+
   it('loadCurrentWeatherFailure sets error', () => {
     const next = reduce(
       initialWeatherState,
