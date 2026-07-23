@@ -48,7 +48,56 @@ describe('searchStoredCities', () => {
     expect(searchStoredCities('tokyo', {}, {})).toEqual([]);
   });
 
+  it('returns empty list when query sanitizes to empty', () => {
+    expect(searchStoredCities('!!!', { '1,1': mockRecentCity() }, {})).toEqual([]);
+  });
+
+  it('skips recent cities that do not match the query', () => {
+    const recentCities: RecentCitiesMap = {
+      '48.85,2.35': mockRecentCity({
+        key: '48.85,2.35',
+        label: 'paris, france',
+        root,
+      }),
+    };
+    expect(searchStoredCities('tokyo', recentCities, {})).toEqual([]);
+  });
+
+  it('deduplicates duplicate recent rows for the same city label', () => {
+    const recentCities: RecentCitiesMap = {
+      '1,1': mockRecentCity({
+        key: '1,1',
+        label: 'paris, france',
+        root,
+        updatedAt: 2,
+      }),
+      '2,2': mockRecentCity({
+        key: '2,2',
+        label: 'paris, france',
+        root,
+        updatedAt: 1,
+      }),
+    };
+    const results = searchStoredCities('paris', recentCities, {});
+    expect(results).toHaveLength(1);
+  });
+
+  it('skips favorites that do not match the query', () => {
+    const favoritesCities: FavoriteCitiesMap = {
+      'lyon, france': { cityLabel: 'lyon, france' },
+      'paris, france': { cityLabel: 'paris, france' },
+    };
+    const results = searchStoredCities('paris', {}, favoritesCities);
+    expect(results).toHaveLength(1);
+    expect(results[0]?.name).toBe('paris');
+  });
+
   it('offlinePickUrl round-trips through parseOfflinePick', () => {
     expect(parseOfflinePick(offlinePickUrl('paris, france'))).toBe('paris, france');
   });
+
+  it('parseOfflinePick returns null for non-offline urls', () => {
+    expect(parseOfflinePick('https://example.com')).toBeNull();
+  });
 });
+

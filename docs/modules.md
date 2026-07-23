@@ -128,7 +128,12 @@ Interfaces aligned with WeatherAPI JSON:
 
 ## Tests (by area)
 
-- **Service:** `weather.service.spec.ts`
-- **Store:** `weather.state.spec.ts`, `weather.reducer.spec.ts`, `weather.actions.spec.ts`, `weather.effects.spec.ts`, `weather.storage.spec.ts`, `weather-user-message.spec.ts`, `weather-update-interval.spec.ts`
-- **Helpers:** `weather-search-query.spec.ts`, `weather-refresh.spec.ts`, `clean-text.spec.ts`, `search-stored-cities.spec.ts`
-- **Components:** dashboard, detail panel, results table, current-weather-card specs
+- **Service:** `weather.service.spec.ts`, `connectivity.service.spec.ts`
+- **Store:** `weather.state.spec.ts`, `weather.reducer.spec.ts`, `weather.actions.spec.ts`, `weather.effects.spec.ts`, `weather.storage.spec.ts`, `weather-user-message.spec.ts`, `weather-update-interval.spec.ts`, `weather-test-fixtures.spec.ts`
+- **Helpers:** `weather-search-query.spec.ts`, `weather-refresh.spec.ts`, `clean-text.spec.ts`, `search-stored-cities.spec.ts`, `is-browser-online.spec.ts`
+- **i18n:** `app-locale.spec.ts`, `i18n.pipe.spec.ts`, `messages.spec.ts`, `translate.spec.ts`
+- **Components:** dashboard, favorites list, detail panel, results table, `current-weather-card` specs
+- **Shell:** `app.spec.ts`, `app.config.spec.ts`, `app.routes.spec.ts`
+- **Models:** TypeScript interfaces only — no runtime unit tests
+- **Coverage note:** `ConnectivityService` SSR `window` guard (~1 branch) is untestable under jsdom without changing production source; browser paths are fully covered
+

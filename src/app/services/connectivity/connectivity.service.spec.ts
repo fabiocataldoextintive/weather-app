@@ -36,3 +36,11 @@ describe('ConnectivityService', () => {
     expect(service.isOnline()).toBe(true);
   });
 });
+
+/*
+ * NOTE (coverage gap — intentional skip after retries):
+ * `ConnectivityService` constructor line `if (typeof window === 'undefined') return;`
+ * is an SSR guard. jsdom exposes a non-configurable `window`, so this branch cannot
+ * be exercised without editing production source. File stays ~88.9% statements /
+ * ~85.7% lines; all browser paths are covered.
+ */
