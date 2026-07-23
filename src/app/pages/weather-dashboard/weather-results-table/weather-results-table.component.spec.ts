@@ -113,10 +113,21 @@ describe('WeatherResultsTableComponent', () => {
 
     const cmp = fixture.componentInstance as unknown as {
       goToNextPage(): void;
+      goToPreviousPage(): void;
+      currentPage(): number;
     };
     cmp.goToNextPage();
     fixture.detectChanges();
     expect(el.querySelectorAll('.results-table__row').length).toBe(3);
+    expect(cmp.currentPage()).toBe(1);
+
+    cmp.goToPreviousPage();
+    fixture.detectChanges();
+    expect(el.querySelectorAll('.results-table__row').length).toBe(RECENT_CITIES_PAGE_SIZE);
+    expect(cmp.currentPage()).toBe(0);
+
+    cmp.goToPreviousPage();
+    expect(cmp.currentPage()).toBe(0);
   });
 
   it('should hide pagination when history fits one page', () => {
