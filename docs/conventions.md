@@ -50,10 +50,14 @@
 
 ## Testing
 
-- Framework: **Vitest** (not Karma)
+- Framework: **Vitest** (not Karma); coverage via `npm run test:coverage` (`vitest run --coverage`)
 - File suffix: `*.spec.ts` next to implementation
 - Prefer testing reducers/effects/services in isolation; use `weather-test-fixtures` for API shapes
 - `localStorage` tests must account for guards in storage helpers
+- Target: **≥90%** statement/line coverage per implementation file where runtime code exists
+- Pure TypeScript interfaces under `models/` do not require specs
+- Do not edit production source solely to unlock an unreachable SSR/test branch; leave an explicit note instead
+
 
 ## File organization
 
