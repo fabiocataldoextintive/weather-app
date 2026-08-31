@@ -11,7 +11,7 @@
 | Storage keys | kebab-case string constants in `weather.storage.ts` | `recent-cities` |
 | Recent city key | `"lat,lon"` string from API location | Used as map key in `recentCities` |
 | Favorite key | `favoriteCityKey(cityLabel)` — cleaned lowercase label | `cleanText` + normalization |
-| Display city label | API capitalization (`name`, `country`) in search/history UI | Do **not** pass display labels through `cleanText` |
+| Display city label | `locationDisplayLabel(name, region, country)` — API capitalization, all non-empty parts | Do **not** pass display labels through `cleanText` |
 
 ## Angular style
 

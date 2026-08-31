@@ -2,6 +2,7 @@ import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
 
 import { sanitizeWeatherSearchInput } from '../../helpers/weather-search-query';
 import { createLastUpdateTimestamp } from '../../helpers/weather-refresh';
+import { locationDisplayLabel } from '../../helpers/location-display-label';
 import type { Root } from '../../models/root.interface';
 import { weatherActions } from './weather.actions';
 import {
@@ -11,10 +12,6 @@ import {
   type RecentCitiesMap,
   type WeatherState,
 } from './weather.state';
-
-function locationDisplayLabel(name: string, country: string): string {
-  return country ? `${name}, ${country}` : name;
-}
 
 function upsertRecentMap(state: WeatherState, key: string, label: string, root: Root): RecentCitiesMap {
   const now = Date.now();
@@ -75,7 +72,11 @@ const weatherReducer = createReducer(
     activeLocationLabel: null,
   })),
   on(weatherActions.loadCurrentWeatherSuccess, (state, { q, label, root }) => {
-    const displayLabel = locationDisplayLabel(root.location.name, root.location.country);
+    const displayLabel = locationDisplayLabel(
+      root.location.name,
+      root.location.region,
+      root.location.country,
+    );
     const recentCities = upsertRecentMap(state, q, displayLabel, root);
     const row = recentCities[q];
     const lastUpdate = row?.lastUpdate ?? createLastUpdateTimestamp();
